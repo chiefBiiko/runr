@@ -60,7 +60,9 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
            '\n',
            'jsonlite::toJSON(c((', 
            paste0(deparse(tasks[[i]]), sep='\n', collapse=''), 
-           ')(), \'runParallel_END\'))')
+           ')(), \'runParallel_END\'))',
+           '\n',
+           'sink()')
   })
   # further preparation
   PID <- list()  # memory for PIDs of tasks
