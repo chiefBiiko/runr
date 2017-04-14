@@ -16,8 +16,8 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
             is.null(cb) || is.function(cb))
   # setup
   on.exit({
-    lapply(PID, function(pid) tools::pskill(pid))
     unlink('runParallel', recursive=T)
+    lapply(PID, function(pid) tools::pskill(pid))
   })
   if (dir.exists('runParallel')) unlink('runParallel', recursive=T)
   dir.create('runParallel')  # root for all tasks
@@ -53,18 +53,16 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
   FLNMS_JSON <- lapply(FLNMS_R, function(n) {
     sub('R$', 'json', n, perl=T)
   })
-  # prepare input tasks
-  xp.tasks <- lapply(1L:length(games), function(i) {
-    sprintf(paste0('sink(file=\'%s\')\n', 
-                   'jsonlite::toJSON(c((%s)(), \'runParallel_END\'))\n', 
-                   'sink()'),
-            FLNMS_JSON[[i]], paste0(deparse(tasks[[i]]), sep='\n', collapse=''))
-  })
   # further preparation
   PID <- list()  # memory for PIDs of tasks
   lapply(1L:length(games), function(i) {
+    # prepare input tasks
+    xp.task <- sprintf(paste0('sink(file=\'%s\')\n', 
+                              'jsonlite::toJSON(c((%s)(), \'runParallel_END\'))\n', 
+                               'sink()'),
+                       FLNMS_JSON[[i]], paste0(deparse(tasks[[i]]), sep='\n', collapse=''))
     # export prepared tasks to their designated directory
-    cat(xp.tasks[[i]], file=FLNMS_R[[i]])
+    cat(xp.task, file=FLNMS_R[[i]])
     # make a json log for each xp.task
     cat('', file=FLNMS_JSON[[i]])
     # start child processes and record their pids
