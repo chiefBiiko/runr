@@ -1,10 +1,10 @@
-# runSeries
+# runWaterfall
 
 # intended usage:
-#   moo <- function() 'mooooooo'
-#   runSeries(list(function() 1L, function() 2L, moo), function(d) print(d))
+#   runWaterfall(list(function() 1L, function(a) a + 2L, function(a) a + 3L), 
+#                function(d) print(d))
 
-runSeries <- function(tasks=list(NULL), cb=NULL) {
+runWaterfall <- function(tasks=list(NULL), cb=NULL) {
   stopifnot(all(sapply(tasks, function(t) is.function(t))),
             is.null(cb) || is.function(cb))
   # setup
@@ -28,10 +28,15 @@ runSeries <- function(tasks=list(NULL), cb=NULL) {
       aames[i]
     }
   })
-  # call series
-  x <- lapply(tasks, function(t) t())
-  # set names
-  names(x) <- games
+  # call series as waterfall
+  x <- list()  # memory of return values
+  lapply(1L:length(games), function(i) {
+    if (i == 1L) {
+      x[games[i]] <<- tasks[[i]]()
+    } else {
+      x[games[i]] <<- tasks[[i]](x[[i - 1L]])
+    }
+  })
   # returning
   return(if (is.function(cb)) cb(x) else x)
 }

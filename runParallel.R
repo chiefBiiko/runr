@@ -1,5 +1,10 @@
 # runParallel
 
+# intended usage:
+#   runParallel(list(function(i=1L) while (i < 1e6L) i <- i + 1L, 
+#                    function() {Sys.sleep(10L); return('parapara!')}), 
+#               function(d) print(d))
+
 lapply(list('sys', 'jsonlite'), function(p) {
   if (!p %in% .packages(T)) install.packages(p)
 })
@@ -54,7 +59,7 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
            '\')',
            '\n',
            'jsonlite::toJSON(c((', 
-           paste0(deparse(tasks[[i]]), collapse=''), 
+           paste0(deparse(tasks[[i]]), sep='\n', collapse=''), 
            ')(), \'runParallel_END\'))')
   })
   # further preparation
@@ -85,5 +90,7 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
     if (i > length(games)) i <- 1L  # rewind
   }
   # exit
+  # substitute EOF error
+  x <- lapply(x, function(v) if (v == 'runParallel_END') NULL else v)
   return(if (is.function(cb)) cb(x) else x)
 }
