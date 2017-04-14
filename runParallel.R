@@ -9,6 +9,7 @@ lapply(list('sys', 'jsonlite'), function(p) {
   if (!p %in% .packages(T)) install.packages(p)
 })
 
+source('https://github.com/chiefBiiko/runr/raw/master/getFuncNames.R')
 source('https://github.com/chiefBiiko/countMatch/raw/master/countMatch.R')
 
 runParallel <- function(tasks=list(NULL), cb=NULL) {
@@ -40,9 +41,11 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
   lapply(1L:length(games), function(i) {
     # prepare input tasks
     xp.task <- sprintf(paste0('sink(file=\'%s\')\n', 
-                              'jsonlite::toJSON(c((%s)(), \'runParallel_END\'))\n', 
-                               'sink()'),
-                       FLNMS_JSON[[i]], paste0(deparse(tasks[[i]]), sep='\n', collapse=''))
+                              'jsonlite::toJSON(c((%s)(), ', 
+                              '\'runParallel_END\'))\n', 
+                               'sink()'), 
+                       FLNMS_JSON[[i]], 
+                       paste0(deparse(tasks[[i]]), sep='\n', collapse=''))
     # export prepared tasks to their designated directory
     cat(xp.task, file=FLNMS_R[[i]])
     # make a json log for each xp.task

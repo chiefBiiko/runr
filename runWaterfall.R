@@ -4,6 +4,8 @@
 #   runWaterfall(list(function() 1L, function(a) a + 2L, function(a) a + 3L), 
 #                function(d) print(d))
 
+source('https://github.com/chiefBiiko/runr/raw/master/getFuncNames.R')
+
 runWaterfall <- function(tasks=list(NULL), cb=NULL) {
   stopifnot(all(sapply(tasks, function(t) is.function(t))),
             is.null(cb) || is.function(cb))
