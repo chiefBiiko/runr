@@ -1,6 +1,6 @@
 # runWaterfall
 
-# intended usage:
+# Usage:
 #   runWaterfall(list(function() 1L, function(a) a + 2L, function(a) a + 3L), 
 #                function(d) print(d))
 

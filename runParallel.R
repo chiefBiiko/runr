@@ -1,6 +1,6 @@
 # runParallel
 
-# intended usage:
+# Usage:
 #   runParallel(list(function(i=1L) while (i < 1e6L) i <- i + 1L, 
 #                    function() {Sys.sleep(10L); return('parapara!')}), 
 #               function(d) print(d))
@@ -22,20 +22,13 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
   })
   # io
   dir.create('runParallel')  # root for all tasks
-  lapply(1L:length(tasks), function(i) {  # each task gets an own dir
-    dir.create(file.path('runParallel', as.character(i)))
-  })
   # function names
   games <- getFuncNames(tasks, cb)  # returns the names of tasks only
-  # make filenames
+  # filenames
   FLNMS_R <- lapply(1L:length(games), function(i) {
-    file.path('runParallel', 
-              as.character(i), 
-              paste0('xp.', games[i], '.R'))
+    file.path('runParallel', paste0('xp.', games[i], '.R'))
   })
-  FLNMS_JSON <- lapply(FLNMS_R, function(n) {
-    sub('R$', 'json', n, perl=T)
-  })
+  FLNMS_JSON <- lapply(FLNMS_R, function(n) sub('R$', 'json', n, perl=T))
   # further preparation
   PID <- list()  # memory for PIDs of tasks
   lapply(1L:length(games), function(i) {
@@ -50,14 +43,14 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
     cat(xp.task, file=FLNMS_R[[i]])
     # make a json log for each xp.task
     cat('', file=FLNMS_JSON[[i]])
-    # start child processes and record their pids
+    # start child processes non-blocking and record their pids
     PID[games[i]] <<- sys::exec_background('Rscript', FLNMS_R[[i]], F, F)
   })
   # enter blocking loop till all tasks are done
   status <- lapply(PID, function(p) F)  # task status completed: T/F
   x <- lapply(status, function(s) NULL)  # return object
   i <- 1L
-  repeat {  # preferring repeat with a counter over while
+  repeat {  # block
     # check if current task completed
     if (countMatch(FLNMS_JSON[[i]], 'runParallel_END', perl=F, fixed=T) > 0L) {
       # read in return value
@@ -65,8 +58,8 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
       # mark current task as completed
       status[games[i]] <- T
     }
-    # check if all tasks have completed
-    if (all(unlist(status))) break
+    # check if all tasks completed
+    if (all(unlist(status))) break  # been time
     i <- i + 1L  # increment
     if (i > length(games)) i <- 1L  # rewind
   }

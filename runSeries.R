@@ -1,6 +1,6 @@
 # runSeries
 
-# intended usage:
+# Usage:
 #   moo <- function() 'mooooooo'
 #   runSeries(list(function() 1L, function() 2L, moo), function(d) print(d))
 
