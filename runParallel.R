@@ -15,34 +15,17 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
   stopifnot(all(sapply(tasks, function(t) is.function(t))),
             is.null(cb) || is.function(cb))
   # setup
-  on.exit({
+  on.exit({  # clean up
     unlink('runParallel', recursive=T)
     lapply(PID, function(pid) tools::pskill(pid))
   })
+  # io
   dir.create('runParallel')  # root for all tasks
   lapply(1L:length(tasks), function(i) {  # each task gets an own dir
     dir.create(file.path('runParallel', as.character(i)))
   })
-  mcall <- gsub('\\s+', ' ',  # get unevaluated inputs
-                paste0(deparse(match.call()), collapse=''), perl=T)
-  # extract tasks functions only as length 1 chr vector
-  funcs <- if (is.null(cb)) {  # case no cb
-    sub('^.+list\\((.*)\\)\\)$', '\\1', mcall, perl=T)
-  } else {                     # case cb
-    sub('^.*list\\((.*)(\\),\\scb.+)|(\\)\\))$', '\\1', mcall, perl=T)
-  }
-  # split funcs on comma and space
-  split <- strsplit(funcs, ', ', fixed=T)[[1L]]
-  # substitute unnamed functions with 'anonymous'
-  aames <- sub('^function.+$', 'anonymous', split, perl=T)
-  # if anonymous suffix is index
-  games <- sapply(1L:length(aames), function(i) {
-    if (aames[i] == 'anonymous') {
-      paste0('anonymous', as.character(i))
-    } else {
-      aames[i]
-    }
-  })
+  # function names
+  games <- getFuncNames(tasks, cb)  # returns the names of tasks only
   # make filenames
   FLNMS_R <- lapply(1L:length(games), function(i) {
     file.path('runParallel', 
