@@ -2,7 +2,7 @@
 
 # Usage:
 #   moo <- function() 'mooooooo'
-#   runSeries(list(function() 1L, function() 2L, moo), function(d) print(d))
+#   runSeries(list(function() 1L, function() 2L, moo), function(d, e) print(d))
 
 source('https://github.com/chiefBiiko/runr/raw/master/getFuncNames.R')
 
@@ -12,9 +12,17 @@ runSeries <- function(tasks=list(NULL), cb=NULL) {
   # setup
   games <- getFuncNames(tasks, cb)  # returns the names of tasks only
   # call series
-  x <- lapply(tasks, function(t) t())
+  ERR <- NULL
+  x <- lapply(tasks, function(task) {
+    tryCatch(task(), 
+             error=function(e) {
+               ERR <<- e
+               return(e)
+             })
+  })
   # set names
+  if (length(games) > length(x)) games <- games[1:length(x)]
   names(x) <- games
   # returning
-  return(if (is.function(cb)) cb(x) else x)
+  return(if (is.function(cb)) cb(x, ERR) else x)
 }
