@@ -19,6 +19,7 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
     lapply(PID, function(pid) tools::pskill(pid))
     unlink('runParallel', recursive=T)
   })
+  if (dir.exists('runParallel')) unlink('runParallel', recursive=T)
   dir.create('runParallel')  # root for all tasks
   lapply(1L:length(tasks), function(i) {  # each task gets an own dir
     dir.create(file.path('runParallel', as.character(i)))
@@ -54,15 +55,10 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
   })
   # prepare input tasks
   xp.tasks <- lapply(1L:length(games), function(i) {
-    paste0('sink(file=\'',
-           FLNMS_JSON[[i]],
-           '\')',
-           '\n',
-           'jsonlite::toJSON(c((', 
-           paste0(deparse(tasks[[i]]), sep='\n', collapse=''), 
-           ')(), \'runParallel_END\'))',
-           '\n',
-           'sink()')
+    sprintf(paste0('sink(file=\'%s\')\n', 
+                   'jsonlite::toJSON(c((%s)(), \'runParallel_END\'))\n', 
+                   'sink()'),
+            FLNMS_JSON[[i]], paste0(deparse(tasks[[i]]), sep='\n', collapse=''))
   })
   # further preparation
   PID <- list()  # memory for PIDs of tasks
