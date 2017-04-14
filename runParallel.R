@@ -19,7 +19,6 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
     unlink('runParallel', recursive=T)
     lapply(PID, function(pid) tools::pskill(pid))
   })
-  if (dir.exists('runParallel')) unlink('runParallel', recursive=T)
   dir.create('runParallel')  # root for all tasks
   lapply(1L:length(tasks), function(i) {  # each task gets an own dir
     dir.create(file.path('runParallel', as.character(i)))
