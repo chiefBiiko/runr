@@ -15,9 +15,11 @@ runSeries <- function(tasks=list(NULL), cb=NULL) {
   # call series
   err <- NULL
   x <- withRestarts(  # restarts allow breaking an apply iterator
-    lapply(tasks, function(task) {
-      tryCatch(task(),                                                # try
-               error=function(e) err <<- geterrmessage(),             # catch
+    lapply(1L:length(games), function(i) {
+      tryCatch(tasks[[i]](),                                          # try
+               error=function(e) {                                    # catch
+                 err <<- sprintf('Error in %s: %s', games[i], geterrmessage())
+               },
                finally=if (!is.null(err)) invokeRestart("stopLoop"))  # finally
     }),
     stopLoop=function() NULL  # if error break immediately and return NULL

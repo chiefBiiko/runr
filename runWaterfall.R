@@ -22,7 +22,9 @@ runWaterfall <- function(tasks=list(NULL), cb=NULL) {
                } else {
                  tasks[[i]](x[[i - 1L]])  # all others do
                },
-               error=function(e) err <<- geterrmessage(),             # catch
+               error=function(e) {                                    # catch
+                 err <<- sprintf('Error in %s: %s', games[i], geterrmessage())
+               },             # catch
                finally=if (!is.null(err)) invokeRestart("stopLoop"))  # finally
     }),
     stopLoop=function() x <<- NULL  # if error break and set x to NULL
