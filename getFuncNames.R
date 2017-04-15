@@ -15,7 +15,7 @@ getFuncNames <- function(tasks, cb) {  # returns the names of tasks only
     sub('^.*tasks = list\\((.*)(\\),\\scb.+)|(\\)\\))$', '\\1', mcall, perl=T)
   }
   # split funcs on comma and space
-  split <- strsplit(funcs, ', ', fixed=T)[[1L]]
+  split <- strsplit(funcs, ', (?![^()]*+\\))', perl=T)[[1L]]
   # substitute unnamed functions with 'anonymous'
   aames <- sub('^function.+$', 'anonymous', split, perl=T)
   # if anonymous suffix is index
