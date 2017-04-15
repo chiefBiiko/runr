@@ -75,13 +75,15 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
   i <- 1L
   repeat {  # block
     # check if error occurred
-    if (countMatch(FLNMS_JSON[[i]], 'runParallel_ERR', perl=F, fixed=T) > 0L) {
+    if (status[games[i]] == F &&
+        countMatch(FLNMS_JSON[[i]], 'runParallel_ERR', perl=F, fixed=T) > 0L) {
       x <- NULL  # set data to NULL
       err <- jsonlite::fromJSON(FLNMS_JSON[[i]])[1L]  # read in error
       break  # early exit
     }
     # check if current task completed
-    if (countMatch(FLNMS_JSON[[i]], 'runParallel_EOF', perl=F, fixed=T) > 0L) {
+    if (status[games[i]] == F &&
+        countMatch(FLNMS_JSON[[i]], 'runParallel_EOF', perl=F, fixed=T) > 0L) {
       # read in return value
       dp <- jsonlite::fromJSON(FLNMS_JSON[[i]])[1L]  # deparsed value
       x[games[i]] <- powerParseRSON(dp)  # try casting
@@ -94,9 +96,9 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
     if (i > length(games)) i <- 1L  # rewind
   }
   # exit
-  # substitute EOF error
+  # substitute void return value, formerly: v[1L] == 'runParallel_EOF'
   if (!is.null(x)) {
-    x <- lapply(x, function(v) if (v[1L] == 'runParallel_EOF') NULL else v)
+    x <- lapply(x, function(v) if (is.list(v) && length(v) == 0L) NULL else v)
   }
   return(if (is.function(cb)) cb(x, err) else x)
 }
