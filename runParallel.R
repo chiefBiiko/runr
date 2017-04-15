@@ -54,7 +54,8 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
                               'geterrmessage()))\n',
                               '}\n',
                               '),\n',
-                              'runParallel_END)\n', 
+                              'runParallel_END',
+                              ')\n', 
                               ')\n', 
                               'sink()'), 
                        games[i],
@@ -65,7 +66,7 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
     # make a json log for each xp.task
     cat('', file=FLNMS_JSON[[i]])
     # start child processes non-blocking and record their pids
-    PID[games[i]] <<- sys::exec_background('Rscript', FLNMS_R[[i]], T, T)
+    PID[games[i]] <<- sys::exec_background('Rscript', FLNMS_R[[i]], F, F)
   })
   # enter blocking loop till all tasks are done
   err <- NULL
@@ -96,7 +97,7 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
     if (i > length(games)) i <- 1L  # rewind
   }
   # exit
-  # substitute void return value, formerly: v[1L] == 'runParallel_EOF'
+  # substitute void return value
   if (!is.null(x)) {
     x <- lapply(x, function(v) if (is.list(v) && length(v) == 0L) NULL else v)
   }
