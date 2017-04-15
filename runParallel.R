@@ -14,8 +14,10 @@ source('https://github.com/chiefBiiko/countMatch/raw/master/countMatch.R')
 
 runParallel <- function(tasks=list(NULL), cb=NULL) {
   stopifnot(all(sapply(tasks, function(t) is.function(t))),
-            is.null(cb) || is.function(cb),
-            if (is.function(cb)) length(formals(cb)) == 2L)
+            is.null(cb) || is.function(cb))
+  if (is.function(cb) && length(formals(cb)) != 2L) {
+    stop('callback must have two parameters: 1st data, 2nd error')
+  }
   # setup
   on.exit({  # clean up
     unlink('runParallel', recursive=T)
@@ -47,7 +49,8 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
                               '(%s)(),\n', 
                               'error=function(e) {\n',
                               'runParallel_END <<- \'runParallel_ERR\'\n',
-                              'return(paste0(\'Error in \', TASK, \' : \', geterrmessage()))\n',
+                              'return(paste0(\'Error in \', TASK, \' : \', ', 
+                              'geterrmessage()))\n',
                               '}\n',
                               '),\n',
                               'runParallel_END)\n', 

@@ -7,10 +7,13 @@
 
 source('https://github.com/chiefBiiko/runr/raw/master/getFuncNames.R')
 
+
 runSeries <- function(tasks=list(NULL), cb=NULL) {
   stopifnot(all(sapply(tasks, function(t) is.function(t))),
-            is.null(cb) || is.function(cb),
-            if (is.function(cb)) length(formals(cb)) == 2L)
+            is.null(cb) || is.function(cb))
+  if (is.function(cb) && length(formals(cb)) != 2L) {
+    stop('callback must have two parameters: 1st data, 2nd error')
+  }
   # setup
   games <- getFuncNames(tasks, cb)  # returns the names of tasks only
   # call series
