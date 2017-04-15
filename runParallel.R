@@ -3,7 +3,7 @@
 # Usage:
 #   runParallel(list(function(i=1L) while (i < 1e6L) i <- i + 1L, 
 #                    function() {Sys.sleep(10L); return('parapara!')}), 
-#               function(d, err) print(d))
+#               function(d, err) if (is.null(err)) print(d) else print(err))
 
 lapply(list('sys', 'jsonlite'), function(p) {
   if (!p %in% .packages(T)) install.packages(p)
@@ -66,6 +66,7 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
   # enter blocking loop till all tasks are done
   err <- NULL
   status <- lapply(PID, function(p) F)  # task status completed: T/F
+  dp <- ''  # container for deparsed (chr) imports from json
   x <- lapply(status, function(s) NULL)  # return object
   i <- 1L
   repeat {  # block
@@ -78,7 +79,10 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
     # check if current task completed
     if (countMatch(FLNMS_JSON[[i]], 'runParallel_EOF', perl=F, fixed=T) > 0L) {
       # read in return value
-      x[games[i]] <- jsonlite::fromJSON(FLNMS_JSON[[i]])[1L]
+      dp <- jsonlite::fromJSON(FLNMS_JSON[[i]])[1L]  # deparsed character value
+      x[games[i]] <- tryCatch(eval(parse(text=dp)),  # try casting
+                              error=function(e) as.character(dp))
+      dp <- ''  # sweep my trail
       # mark current task as completed
       status[games[i]] <- T
     }

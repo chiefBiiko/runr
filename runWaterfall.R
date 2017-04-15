@@ -2,7 +2,7 @@
 
 # Usage:
 #   runWaterfall(list(function() 1L, function(a) a + 2L, function(a) a + 3L), 
-#                function(d, err) print(d))
+#                function(d, err) if (is.null(err)) print(d) else print(err))
 
 source('https://github.com/chiefBiiko/runr/raw/master/getFuncNames.R')
 

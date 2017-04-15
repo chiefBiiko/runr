@@ -2,7 +2,8 @@
 
 # Usage:
 #   moo <- function() 'mooooooo'
-#   runSeries(list(function() 1L, function() 2L, moo), function(d, err) print(d))
+#   runSeries(list(function() 1L, function() 2L, moo), 
+#             function(d, err) if (is.null(err)) print(d) else print(err))
 
 source('https://github.com/chiefBiiko/runr/raw/master/getFuncNames.R')
 

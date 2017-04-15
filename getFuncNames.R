@@ -10,9 +10,9 @@ getFuncNames <- function(tasks, cb) {  # returns the names of tasks only
                 perl=T)
   # extract tasks functions only as length 1 chr vector
   funcs <- if (is.null(cb)) {  # case no cb
-    sub('^.+list\\((.*)\\)\\)$', '\\1', mcall, perl=T)
+    sub('^.*l(?<=\\()ist\\((.*)\\)\\)$', '\\1', mcall, perl=T)
   } else {                     # case cb
-    sub('^.*list\\((.*)(\\),\\scb.+)|(\\)\\))$', '\\1', mcall, perl=T)
+    sub('^.*l(?<=\\()ist\\((.*)(\\),\\scb.+)|(\\)\\))$', '\\1', mcall, perl=T)
   }
   # split funcs on comma and space
   split <- strsplit(funcs, ', ', fixed=T)[[1L]]
