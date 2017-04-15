@@ -11,6 +11,7 @@ lapply(list('sys', 'jsonlite'), function(p) {
 
 source('https://github.com/chiefBiiko/runr/raw/master/getFuncNames.R')
 source('https://github.com/chiefBiiko/countMatch/raw/master/countMatch.R')
+source('https://github.com/chiefBiiko/runr/raw/master/powerParseRSON.R')
 
 runParallel <- function(tasks=list(NULL), cb=NULL) {
   stopifnot(all(sapply(tasks, function(t) is.function(t))),
@@ -38,13 +39,13 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
   FLNMS_JSON <- lapply(FLNMS_R, function(n) sub('R$', 'json', n, perl=T))
   # further preparation
   PID <- list()  # memory for PIDs of tasks
-  lapply(1L:length(games), function(i) {
+  lapply(1L:length(tasks), function(i) {
     # prepare input tasks
     xp.task <- sprintf(paste0('TASK <- \'%s\'\n',
                               'runParallel_END <- \'runParallel_EOF\'\n',
                               'sink(file=\'%s\')\n',
                               'jsonlite::toJSON(\n', 
-                              'c(\n', 
+                              'list(\n', 
                               'tryCatch(\n',
                               '(%s)(),\n', 
                               'error=function(e) {\n',
@@ -69,25 +70,23 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
   # enter blocking loop till all tasks are done
   err <- NULL
   status <- lapply(PID, function(p) F)  # task status completed: T/F
-  dp <- ''  # container for deparsed (chr) imports from json
+  dp <- NULL  # container for deparsed imports from json
   x <- lapply(status, function(s) NULL)  # return object
   i <- 1L
   repeat {  # block
     # check if error occurred
     if (countMatch(FLNMS_JSON[[i]], 'runParallel_ERR', perl=F, fixed=T) > 0L) {
-      x <- NULL
-      err <- jsonlite::fromJSON(FLNMS_JSON[[i]])[1L]
-      break
+      x <- NULL  # set data to NULL
+      err <- jsonlite::fromJSON(FLNMS_JSON[[i]])[1L]  # read in error
+      break  # early exit
     }
     # check if current task completed
     if (countMatch(FLNMS_JSON[[i]], 'runParallel_EOF', perl=F, fixed=T) > 0L) {
       # read in return value
-      dp <- jsonlite::fromJSON(FLNMS_JSON[[i]])[1L]  # deparsed character value
-      x[games[i]] <- tryCatch(eval(parse(text=dp)),  # try casting
-                              error=function(e) as.character(dp))
-      dp <- ''  # sweep my trail
-      # mark current task as completed
-      status[games[i]] <- T
+      dp <- jsonlite::fromJSON(FLNMS_JSON[[i]])[1L]  # deparsed value
+      x[games[i]] <- powerParseRSON(dp)  # try casting
+      dp <- NULL  # sweep my trail
+      status[games[i]] <- T  # mark current task as completed
     }
     # check if all tasks completed
     if (all(unlist(status))) break  # been time
@@ -97,7 +96,7 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
   # exit
   # substitute EOF error
   if (!is.null(x)) {
-    x <- lapply(x, function(v) if (v == 'runParallel_EOF') NULL else v)
+    x <- lapply(x, function(v) if (v[1L] == 'runParallel_EOF') NULL else v)
   }
   return(if (is.function(cb)) cb(x, err) else x)
 }

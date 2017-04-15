@@ -18,7 +18,7 @@ runWaterfall <- function(tasks=list(NULL), cb=NULL) {
   err <- NULL
   x <- list()  # return object
   withRestarts(  # restarts allow breaking an apply iterator
-    lapply(1L:length(games), function(i) {
+    lapply(1L:length(tasks), function(i) {
       tryCatch(x[games[i]] <<- if (i == 1L) {                         # try
                  tasks[[i]]()  # first task does not have predecessor
                } else {
