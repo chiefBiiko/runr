@@ -94,7 +94,7 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
     # check if all tasks completed
     if (all(unlist(status))) break  # been time
     i <- i + 1L  # increment
-    if (i > length(games)) i <- 1L  # rewind
+    if (i > length(tasks)) i <- 1L  # rewind
   }
   # exit
   # substitute void return value
