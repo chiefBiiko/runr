@@ -1,16 +1,16 @@
-# runParallel
+# runRace
 
 # Usage:
-#   runParallel(list(function(i=1L) while (i < 1e6L) i <- i + 1L, 
+#   runRace(list(function(i=1L) while (i < 1e6L) i <- i + 1L, 
 #                    function() {Sys.sleep(10L); return('parapara!')}), 
-#               function(d, err) if (is.null(err)) print(d) else print(err))
+#               function(d, err) if (is.null(err)) d else stop(err))
 
 if (!'sys' %in% .packages(T)) install.packages('sys')
 
 source('https://github.com/chiefBiiko/runr/raw/master/getFuncNames.R')
 source('https://github.com/chiefBiiko/countMatch/raw/master/countMatch.R')
 
-runParallel <- function(tasks=list(NULL), cb=NULL) {
+runRace <- function(tasks=list(NULL), cb=NULL) {
   stopifnot(all(sapply(tasks, function(t) is.function(t))),
             is.null(cb) || is.function(cb))
   if (is.function(cb) && length(formals(cb)) != 2L) {
@@ -29,7 +29,7 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
   } else {
     unlink('runParallel/*')    # clear old stuff
   }
-  # clone parent's session global environment data
+  # clone parent's global environment data
   save(list=ls(all.names=T, envir=.GlobalEnv), 
        file="runParallel/clone.RData", envir=.GlobalEnv)
   # filenames
@@ -55,8 +55,7 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
                               'assign(\'runParallel_END\', ', 
                               'paste0(\'Error in \', TASK, \' : \', ', 
                               'geterrmessage()), envir=.GlobalEnv)\n',
-                              'return(paste0(\'Error in \', TASK, \' : \', ', 
-                              'geterrmessage()))\n',
+                              'assign(\'RTN\', e, envir=.GlobalEnv)\n',
                               '}\n',
                               '),\n',
                               'writeLines(runParallel_END, \'%s\')',
@@ -83,9 +82,13 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
   repeat {  # block
     # check if error occurred
     if (!status[[games[i]]] &&
-        countMatch(FLNMS_TXT[[i]], '[^runParallel_EOF]') > 0L) {
+        countMatch(FLNMS_TXT[[i]], '[^runParallel_EOF]') > 0L &&
+        file.exists(FLNMS_RDS[[i]])) {
+      # read in error
       x <- NULL  # set data to NULL
-      err <- paste0(readLines(FLNMS_TXT[[i]], warn=F), collapse='')
+      Sys.sleep(1L)  # wait 4 OS to commit
+      err <- readRDS(file=FLNMS_RDS[[i]])
+      err$functionName <- games[i]
       break  # early exit
     }
     # check if current task completed
@@ -99,8 +102,8 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
       if (!is.null(RTN)) x[[games[i]]] <- RTN
       status[[games[i]]] <- T  # mark current task as completed
     }
-    # check if all tasks completed
-    if (all(unlist(status))) break  # been time
+    # check if any tasks completed
+    if (any(unlist(status))) break  # been time
     i <- i + 1L  # increment
     if (i > length(tasks)) i <- 1L  # rewind
   }

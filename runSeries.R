@@ -7,7 +7,6 @@
 
 source('https://github.com/chiefBiiko/runr/raw/master/getFuncNames.R')
 
-
 runSeries <- function(tasks=list(NULL), cb=NULL) {
   stopifnot(all(sapply(tasks, function(t) is.function(t))),
             is.null(cb) || is.function(cb))

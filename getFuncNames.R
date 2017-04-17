@@ -26,6 +26,13 @@ getFuncNames <- function(tasks, cb) {  # returns the names of tasks only
       aames[i]
     }
   })
+  if (any(sapply(games, function(n) {
+    grepl('^anonymous', n, perl=T)
+  }))) {
+    games <- sapply(1L:length(games), function(i) {
+      paste0('function', as.character(i))
+    })
+  }
   # returning name vector
   return(games)
 }
