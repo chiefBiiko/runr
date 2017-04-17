@@ -3,7 +3,7 @@
 # Usage:
 #   moo <- function() 'mooooooo'
 #   runSeries(list(function() 1L, function() 2L, moo), 
-#             function(d, err) if (is.null(err)) print(d) else print(err))
+#             function(d, err) if (is.null(err)) d else stop(err))
 
 source('https://github.com/chiefBiiko/runr/raw/master/getFuncNames.R')
 
@@ -21,7 +21,8 @@ runSeries <- function(tasks=list(NULL), cb=NULL) {
     lapply(1L:length(tasks), function(i) {
       tryCatch(tasks[[i]](),                                          # try
                error=function(e) {                                    # catch
-                 err <<- sprintf('Error in %s: %s', games[i], geterrmessage())
+                 e$functionName <- games[i]  # new property on error obj
+                 err <<- e
                },
                finally=if (!is.null(err)) invokeRestart("stopLoop"))  # finally
     }),

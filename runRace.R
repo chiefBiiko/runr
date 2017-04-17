@@ -1,9 +1,9 @@
 # runRace
 
 # Usage:
-#   runRace(list(function(i=1L) while (i < 1e6L) i <- i + 1L, 
-#                    function() {Sys.sleep(10L); return('parapara!')}), 
-#               function(d, err) if (is.null(err)) d else stop(err))
+#   runRace(list(function() {Sys.sleep(11L); return('first first')}, 
+#                function() {Sys.sleep(10L); return('second first')}), 
+#           function(d, err) if (is.null(err)) d else stop(err))
 
 if (!'sys' %in% .packages(T)) install.packages('sys')
 
@@ -36,7 +36,7 @@ runRace <- function(tasks=list(NULL), cb=NULL) {
   FLNMS_R <- lapply(1L:length(games), function(i) {
     file.path('runParallel', paste0('xp.', games[i], '.R'))
   })
-  FLNMS_TXT <- lapply(FLNMS_R, function(n) sub('R$', 'txt', n, perl=T))
+  FLNMS_LOG <- lapply(FLNMS_R, function(n) sub('R$', 'log', n, perl=T))
   FLNMS_RDS <- lapply(FLNMS_R, function(n) sub('R$', 'rds', n, perl=T))
   # further preparation
   PID <- list()  # memory for PIDs of tasks
@@ -46,8 +46,6 @@ runRace <- function(tasks=list(NULL), cb=NULL) {
                               'RTN <- NULL\n', 
                               'runParallel_END <- \'runParallel_EOF\'\n',
                               'load(\'runParallel/clone.RData\')\n',
-                            # 'sink(file=\'%s\')\n', 
-                            # 'jsonlite::toJSON(\n', 
                               'list(\n', 
                               'tryCatch(\n',
                               'assign(\'RTN\', (%s)(), envir=.GlobalEnv),\n',  
@@ -60,17 +58,15 @@ runRace <- function(tasks=list(NULL), cb=NULL) {
                               '),\n',
                               'writeLines(runParallel_END, \'%s\')',
                               ')\n', 
-                            # ')\n', 
-                            # 'sink()\n',
                               'saveRDS(RTN, file=\'%s\')'), 
                        games[i],
                        paste0(deparse(tasks[[i]]), sep='\n', collapse=''),
-                       FLNMS_TXT[[i]],
+                       FLNMS_LOG[[i]],
                        FLNMS_RDS[[i]])
-    # export prepared tasks to their designated directory
+    # export prepared tasks
     cat(xp.task, file=FLNMS_R[[i]])
-    # make a txt log for each xp.task
-    cat('', file=FLNMS_TXT[[i]])
+    # make a LOG log for each xp.task
+    cat('', file=FLNMS_LOG[[i]])
     # start child processes non-blocking and record their pids
     PID[[games[i]]] <<- sys::exec_background('Rscript', FLNMS_R[[i]], F, F)
   })
@@ -82,7 +78,7 @@ runRace <- function(tasks=list(NULL), cb=NULL) {
   repeat {  # block
     # check if error occurred
     if (!status[[games[i]]] &&
-        countMatch(FLNMS_TXT[[i]], '[^runParallel_EOF]') > 0L &&
+        countMatch(FLNMS_LOG[[i]], '[^runParallel_EOF]') > 0L &&
         file.exists(FLNMS_RDS[[i]])) {
       # read in error
       x <- NULL  # set data to NULL
@@ -93,7 +89,7 @@ runRace <- function(tasks=list(NULL), cb=NULL) {
     }
     # check if current task completed
     if (!status[[games[i]]] &&
-        countMatch(FLNMS_TXT[[i]], 'runParallel_EOF', perl=F, fixed=T) > 0L && 
+        countMatch(FLNMS_LOG[[i]], 'runParallel_EOF', perl=F, fixed=T) > 0L && 
         file.exists(FLNMS_RDS[[i]])) {
       # read in return value
       Sys.sleep(1L)  # wait 4 OS to commit

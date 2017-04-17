@@ -2,7 +2,7 @@
 
 # Usage:
 #   runWaterfall(list(function() 1L, function(a) a + 2L, function(a) a + 3L), 
-#                function(d, err) if (is.null(err)) print(d) else print(err))
+#                function(d, err) if (is.null(err)) d else stop(err))
 
 source('https://github.com/chiefBiiko/runr/raw/master/getFuncNames.R')
 
@@ -25,8 +25,9 @@ runWaterfall <- function(tasks=list(NULL), cb=NULL) {
                  tasks[[i]](x[[i - 1L]])  # all others do
                },
                error=function(e) {                                    # catch
-                 err <<- sprintf('Error in %s: %s', games[i], geterrmessage())
-               },             # catch
+                 e$functionName <- games[i]  # new property on error obj
+                 err <<- e
+               }, 
                finally=if (!is.null(err)) invokeRestart("stopLoop"))  # finally
     }),
     stopLoop=function() x <<- NULL  # if error break and set x to NULL

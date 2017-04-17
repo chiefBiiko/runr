@@ -18,20 +18,11 @@ getFuncNames <- function(tasks, cb) {  # returns the names of tasks only
   split <- strsplit(funcs, ', (?![^()]*+\\))', perl=T)[[1L]]
   # substitute unnamed functions with 'anonymous'
   aames <- sub('^function.+$', 'anonymous', split, perl=T)
-  # if anonymous suffix is index
-  games <- sapply(1L:length(aames), function(i) {
-    if (aames[i] == 'anonymous') {
-      paste0('anonymous', as.character(i))
-    } else {
-      aames[i]
-    }
-  })
-  if (any(sapply(games, function(n) {
-    grepl('^anonymous', n, perl=T)
-  }))) {
-    games <- sapply(1L:length(games), function(i) {
-      paste0('function', as.character(i))
-    })
+  # final names
+  games <- if (any(grepl('anonymous', aames, fixed=T))) {
+    paste0(rep('function', length(aames)), as.character(1L:length(aames)))
+  } else {
+    aames
   }
   # returning name vector
   return(games)
