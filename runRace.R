@@ -3,7 +3,7 @@
 # Usage:
 #   runRace(list(function() {Sys.sleep(11L); return('first first')}, 
 #                function() {Sys.sleep(10L); return('second first')}), 
-#           function(d, err) if (is.null(err)) d else stop(err))
+#           function(d, err) if (is.null(err)) d else stop(err, err$task))
 
 if (!'sys' %in% .packages(T)) install.packages('sys')
 
@@ -84,7 +84,7 @@ runRace <- function(tasks=list(NULL), cb=NULL) {
       x <- NULL  # set data to NULL
       Sys.sleep(1L)  # wait 4 OS to commit
       err <- readRDS(file=FLNMS_RDS[[i]])
-      err$functionName <- games[i]
+      err$task <- games[i]  # aka functionName
       break  # early exit
     }
     # check if current task completed

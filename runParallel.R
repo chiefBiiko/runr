@@ -3,7 +3,7 @@
 # Usage:
 #   runParallel(list(function(i=1L) while (i < 1e6L) i <- i + 1L, 
 #                    function() {Sys.sleep(10L); return('parapara!')}), 
-#               function(d, err) if (is.null(err)) d else stop(err))
+#               function(d, err) if (is.null(err)) d else stop(err, err$task))
 
 if (!'sys' %in% .packages(T)) install.packages('sys')
 
@@ -84,7 +84,7 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
       Sys.sleep(1L)  # wait 4 OS to commit
       # read in error
       err <- readRDS(file=FLNMS_RDS[[i]])
-      err$functionName <- games[i]  # add info
+      err$task <- games[i]  # add info
       break  # early exit
     }
     # check if current task completed
