@@ -7,8 +7,8 @@
 source('https://github.com/chiefBiiko/runr/raw/master/getFuncNames.R')
 
 runWaterfall <- function(tasks=list(NULL), cb=NULL) {
-  stopifnot(all(sapply(tasks, function(t) is.function(t))),
-            length(tasks) >  1,
+  stopifnot(all(sapply(tasks, function(t) is.function(t))), 
+            length(tasks) >  1L, 
             is.null(cb) || is.function(cb))
   if (is.function(cb) && length(formals(cb)) != 2L) {
     stop('callback must have two parameters: 1st data, 2nd error')

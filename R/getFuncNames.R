@@ -14,13 +14,12 @@ getFuncNames <- function(tasks, cb) {  # returns the names of tasks only
   } else {                     # case cb
     sub('^.*tasks = list\\((.*)(\\),\\scb.+)|(\\)\\))$', '\\1', mcall, perl=T)
   }
-  # split funcs on comma and space
-  split <- strsplit(funcs, ', (?![^()]*+\\))', perl=T)[[1L]]
   # final names
-  games <- if (any(grepl('function', funcs, fixed=T))) {
+  games <- if (grepl('function', funcs, fixed=T)) {  # case includes anonymous
     paste0(rep('function', length(tasks)), as.character(1L:length(tasks)))
-  } else {
-    split
+  } else {  # case named only
+    # split funcs on comma and space
+    strsplit(funcs, ', (?![^()]*+\\))', perl=T)[[1L]]
   }
   # returning name vector
   return(games)
