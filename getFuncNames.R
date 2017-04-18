@@ -20,7 +20,7 @@ getFuncNames <- function(tasks, cb) {  # returns the names of tasks only
   aames <- sub('^function.+$', 'anonymous', split, perl=T)
   # final names
   games <- if (any(grepl('anonymous', aames, fixed=T))) {
-    paste0(rep('function', length(aames)), as.character(1L:length(aames)))
+    paste0(rep('function', length(tasks)), as.character(1L:length(tasks)))
   } else {
     aames
   }
