@@ -16,13 +16,11 @@ getFuncNames <- function(tasks, cb) {  # returns the names of tasks only
   }
   # split funcs on comma and space
   split <- strsplit(funcs, ', (?![^()]*+\\))', perl=T)[[1L]]
-  # substitute unnamed functions with 'anonymous'
-  aames <- sub('^function.+$', 'anonymous', split, perl=T)
   # final names
-  games <- if (any(grepl('anonymous', aames, fixed=T))) {
+  games <- if (any(grepl('function', funcs, fixed=T))) {
     paste0(rep('function', length(tasks)), as.character(1L:length(tasks)))
   } else {
-    aames
+    split
   }
   # returning name vector
   return(games)
