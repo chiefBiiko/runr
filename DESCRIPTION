@@ -3,8 +3,12 @@ Title: Running Functions
 Version: 0.0.0.9000
 Authors@R: person("Noah", "Schwarz", email = "first.last@example.com", role = c("aut", "cre"))
 Description: Run a list of functions as series, waterfall, race or parallel.
-Imports: sys, tools
-Depends: R (>= 3.3.2)
+Imports:
+    sys,
+    tools
+Depends:
+    R (>= 3.3.2)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 5.0.1

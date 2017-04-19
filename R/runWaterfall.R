@@ -1,11 +1,45 @@
 # runWaterfall
 
-# Usage:
-#   runWaterfall(list(function() 1L, function(a) a + 2L, function(a) a + 3L), 
-#                function(d, err) if (is.null(err)) d else stop(err, err$task))
+source('R/getFuncNames.R')
 
-source('https://github.com/chiefBiiko/runr/raw/master/getFuncNames.R')
-
+#' Run a list of functions as waterfall.
+#'
+#' \code{runWaterfall} runs its input tasks sequentially, passing each task's 
+#' return value to the next task, and returns either a named list 
+#' (on error \code{NULL}) or the value of a given callback.
+#'
+#' @param tasks List of function objects (anonymous and named) \strong{required}.
+#' @param cb Anonymous or named function object with signature 
+#' \code{cb(error, data)} \strong{optional}.
+#' @return If \code{cb} is \code{NULL} the tasks' return values are returned 
+#' in a named list (on error \code{NULL}). If \code{cb} is a function it is 
+#' called upon completion of all tasks and gets passed an error value 
+#' (default \code{NULL}) as first parameter and a named list of the tasks' 
+#' return values (on error \code{NULL}) as second parameter.
+#' 
+#' @details If an error is encountered while calling the tasks without a 
+#' callback \code{runWaterfall} immediately stops execution and returns 
+#' \code{NULL}. If an error is encountered and a callback is defined 
+#' \code{runWaterfall} immediately stops execution and calls the callback with 
+#' the \code{data} parameter set to \code{NULL} and the \code{error} parameter 
+#' set to the encountered error. Thus, the callback will always have only one 
+#' non-\code{NULL} parameter. Within the callback simply check for an error 
+#' with \code{is.null(error)}. If the \code{error} object is not \code{NULL} 
+#' it has a property \code{$task} indicating the function that failed.
+#' 
+#' @seealso \url{https://github.com/feross/run-waterfall}
+#' 
+#' @examples
+#' callback <- function(err, d) {
+#'   if (is.null(err)) d else stop(err, err$task)
+#' }
+#' runWaterfall(list(function() 1L, 
+#'                   function(a) a + 2L, 
+#'                   function(a) a + 3L), 
+#'              callback)
+#'           
+#' @family runFunctions
+#' @export
 runWaterfall <- function(tasks=list(NULL), cb=NULL) {
   stopifnot(all(sapply(tasks, function(t) is.function(t))), 
             length(tasks) >  1L, 

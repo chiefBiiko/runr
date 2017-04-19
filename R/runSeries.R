@@ -1,12 +1,46 @@
 # runSeries
 
-# Usage:
-#   moo <- function() 'mooooooo'
-#   runSeries(list(function() 1L, function() 2L, moo), 
-#             function(d, err) if (is.null(err)) d else stop(err, err$task))
+source('R/getFuncNames.R')
 
-source('https://github.com/chiefBiiko/runr/raw/master/getFuncNames.R')
-
+#' Run a list of functions as series.
+#'
+#' \code{runSeries} runs its input tasks sequentially returning either a named 
+#' list (on error \code{NULL}) or the value of a given callback.
+#'
+#' @param tasks List of function objects (anonymous and named) 
+#' \strong{required}.
+#' @param cb Anonymous or named function object with signature 
+#' \code{cb(error, data)} \strong{optional}.
+#' @return If \code{cb} is \code{NULL} the tasks' return values are returned 
+#' in a named list (on error \code{NULL}). If \code{cb} is a function it is 
+#' called upon completion of all tasks and gets passed an error value 
+#' (default \code{NULL}) as first parameter and a named list of the tasks' 
+#' return values (on error \code{NULL}) as second parameter.
+#' 
+#' @details If an error is encountered while calling the series without a 
+#' callback \code{runSeries} immediately stops execution and returns 
+#' \code{NULL}. If an error is encountered and a callback is defined 
+#' \code{runSeries} immediately stops execution and calls the callback with 
+#' the \code{data} parameter set to \code{NULL} and the \code{error} parameter 
+#' set to the encountered error. Thus, the callback will always have only one 
+#' non-\code{NULL} parameter. Within the callback simply check for an error 
+#' with \code{is.null(error)}. If the \code{error} object is not \code{NULL} 
+#' it has a property \code{$task} indicating the function that failed.
+#' 
+#' @seealso \url{https://github.com/feross/run-series}
+#' 
+#' @examples
+#' moo <- function() 'mooooooo'
+#' callback <- function(err, d) {
+#'   if (is.null(err)) d else stop(err, err$task)
+#' }
+#' runSeries(list(function() 1L, 
+#'                function() 2L, 
+#'                moo), 
+#'           callback)
+#'           
+#' @family runFunctions
+#' @export
 runSeries <- function(tasks=list(NULL), cb=NULL) {
   stopifnot(all(sapply(tasks, function(t) is.function(t))), 
             length(tasks) >  1L, 
@@ -33,5 +67,5 @@ runSeries <- function(tasks=list(NULL), cb=NULL) {
   if (length(games) > length(x)) games <- games[1:length(x)]
   if (is.list(x)) names(x) <- games
   # returning
-  return(if (is.function(cb)) cb(x, err) else x)
+  return(if (is.function(cb)) cb(err, x) else x)
 }

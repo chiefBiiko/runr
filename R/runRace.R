@@ -1,15 +1,45 @@
 # runRace
 
-# Usage:
-#   runRace(list(function() {Sys.sleep(11L); return('first first')}, 
-#                function() {Sys.sleep(10L); return('second first')}), 
-#           function(d, err) if (is.null(err)) d else stop(err, err$task))
-
 if (!'sys' %in% .packages(T)) install.packages('sys')
 
-source('https://github.com/chiefBiiko/runr/raw/master/getFuncNames.R')
-source('https://github.com/chiefBiiko/countMatch/raw/master/countMatch.R')
+source('R/getFuncNames.R')
+source('R/countMatch.R')
 
+#' Run a list of functions as race.
+#'
+#' \code{runRace} runs its input tasks parallel until the very first return of 
+#' any of its tasks and returns either a named list (all \code{NULL} but one and
+#' on error \code{NULL}) or the value of a given callback.
+#'
+#' @param tasks List of function objects (anonymous and named) \strong{required}.
+#' @param cb Anonymous or named function object with signature 
+#' \code{cb(error, data)} \strong{optional}.
+#' @return If \code{cb} is \code{NULL} the tasks' return values are returned 
+#' in a named list (on error \code{NULL}). If \code{cb} is a function it is 
+#' called upon completion of all tasks and gets passed an error value 
+#' (default \code{NULL}) as first parameter and a named list of the tasks' 
+#' return values (on error \code{NULL}) as second parameter.
+#' 
+#' @details If an error is encountered while calling the tasks without a 
+#' callback \code{runRace} immediately stops execution and returns 
+#' \code{NULL}. If an error is encountered and a callback is defined 
+#' \code{runRace} immediately stops execution and calls the callback with 
+#' the \code{data} parameter set to \code{NULL} and the \code{error} parameter 
+#' set to the encountered error. Thus, the callback will always have only one 
+#' non-\code{NULL} parameter. Within the callback simply check for an error 
+#' with \code{is.null(error)}. If the \code{error} object is not \code{NULL} 
+#' it has a property \code{$task} indicating the function that failed.
+#' 
+#' @examples
+#' callback <- function(err, d) {
+#'   if (is.null(err)) d else stop(err, err$task)
+#' }
+#' runRace(list(function() {Sys.sleep(11L); return('first first')}, 
+#'              function() {Sys.sleep(10L); return('second first')}), 
+#'         callback)
+#'           
+#' @family runFunctions
+#' @export
 runRace <- function(tasks=list(NULL), cb=NULL) {
   stopifnot(all(sapply(tasks, function(t) is.function(t))), 
             length(tasks) >  1L, 
@@ -78,9 +108,9 @@ runRace <- function(tasks=list(NULL), cb=NULL) {
     if (!status[[games[i]]] &&
         countMatch(FLNMS_LOG[[i]], '[^runParallel_EOF]') > 0L &&
         file.exists(FLNMS_RDS[[i]])) {
-      # read in error
       x <- NULL  # set data to NULL
       Sys.sleep(1L)  # wait 4 OS to commit
+      # read in error
       err <- readRDS(file=FLNMS_RDS[[i]])
       err$task <- games[i]  # aka functionName
       break  # early exit
