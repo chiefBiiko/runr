@@ -7,9 +7,6 @@ doo <- function() data.frame(a=0L:9L,
                              b=10L:19L)
 
 testthat::test_that('return data is valid', {
-  # case error encountered
-  testthat::expect_null(runSeries(list(moo,
-                                       function() stop('throwing for fun'))))
   # return is named list
   testthat::expect_identical(runWaterfall(list(function() 111L,
                                                function(a) a + 2L)),
