@@ -25,7 +25,8 @@
 #' with \code{is.null(error)}. If the \code{error} object is not \code{NULL} 
 #' it has a property \code{$task} indicating the function that failed.
 #' 
-#' @seealso \url{https://github.com/feross/run-series}
+#' @seealso \code{\link{runWaterfall}} \code{\link{runRace}} 
+#' \code{\link{runParallel}} \url{https://github.com/feross/run-series}
 #' 
 #' @examples
 #' moo <- function() 'mooooooo'

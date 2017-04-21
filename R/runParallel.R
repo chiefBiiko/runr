@@ -25,6 +25,9 @@
 #' with \code{is.null(error)}. If the \code{error} object is not \code{NULL} 
 #' it has a property \code{$task} indicating the function that failed.
 #' 
+#' @seealso \code{\link{runSeries}} \code{\link{runWaterfall}} 
+#' \code{\link{runRace}} \url{https://github.com/feross/run-parallel}
+#' 
 #' @examples
 #' callback <- function(err, d) {
 #'   if (is.null(err)) d else stop(err, err$task)
@@ -127,5 +130,5 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
     if (i > length(tasks)) i <- 1L  # rewind
   }
   # exit
-  return(if (is.function(cb)) cb(x, err) else x)
+  return(if (is.function(cb)) cb(err, x) else x)
 }

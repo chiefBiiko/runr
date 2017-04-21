@@ -46,9 +46,11 @@ runWaterfall(list(function() 1L,
           
 }
 \seealso{
-\url{https://github.com/feross/run-waterfall}
+\code{\link{runSeries}} \code{\link{runRace}} 
+\code{\link{runParallel}} \url{https://github.com/feross/run-waterfall}
 
-Other runFunctions: \code{\link{runParallel}},
-  \code{\link{runRace}}, \code{\link{runSeries}}
+Other runFunctions: \code{\link{bind}},
+  \code{\link{runParallel}}, \code{\link{runRace}},
+  \code{\link{runSeries}}
 }
 

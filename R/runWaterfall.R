@@ -25,7 +25,8 @@
 #' with \code{is.null(error)}. If the \code{error} object is not \code{NULL} 
 #' it has a property \code{$task} indicating the function that failed.
 #' 
-#' @seealso \url{https://github.com/feross/run-waterfall}
+#' @seealso \code{\link{runSeries}} \code{\link{runRace}} 
+#' \code{\link{runParallel}} \url{https://github.com/feross/run-waterfall}
 #' 
 #' @examples
 #' callback <- function(err, d) {
@@ -72,5 +73,5 @@ runWaterfall <- function(tasks=list(NULL), cb=NULL) {
     stopLoop=function() x <<- NULL  # if error break and set x to NULL
   )
   # returning
-  return(if (is.function(cb)) cb(x, err) else x)
+  return(if (is.function(cb)) cb(err, x) else x)
 }

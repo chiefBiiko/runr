@@ -45,7 +45,11 @@ runParallel(list(function(i=1L) while (i < 1e6L) i <- i + 1L,
           
 }
 \seealso{
-Other runFunctions: \code{\link{runRace}},
-  \code{\link{runSeries}}, \code{\link{runWaterfall}}
+\code{\link{runSeries}} \code{\link{runWaterfall}} 
+\code{\link{runRace}} \url{https://github.com/feross/run-parallel}
+
+Other runFunctions: \code{\link{bind}},
+  \code{\link{runRace}}, \code{\link{runSeries}},
+  \code{\link{runWaterfall}}
 }
 

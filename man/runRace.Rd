@@ -45,7 +45,11 @@ runRace(list(function() {Sys.sleep(11L); return('first first')},
           
 }
 \seealso{
-Other runFunctions: \code{\link{runParallel}},
-  \code{\link{runSeries}}, \code{\link{runWaterfall}}
+\code{\link{runSeries}} \code{\link{runWaterfall}} 
+\code{\link{runParallel}}
+
+Other runFunctions: \code{\link{bind}},
+  \code{\link{runParallel}}, \code{\link{runSeries}},
+  \code{\link{runWaterfall}}
 }
 
