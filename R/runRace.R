@@ -1,10 +1,5 @@
 # runRace
 
-if (!'sys' %in% .packages(T)) install.packages('sys')
-
-source('R/getFuncNames.R')
-source('R/countMatch.R')
-
 #' Run a list of functions as race.
 #'
 #' \code{runRace} runs its input tasks parallel until the very first return of 

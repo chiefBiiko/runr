@@ -1,10 +1,5 @@
 # runParallel
 
-if (!'sys' %in% .packages(T)) install.packages('sys')
-
-source('R/getFuncNames.R')
-source('R/countMatch.R')
-
 #' Run a list of functions parallel.
 #'
 #' \code{runParallel} runs its input tasks parallel until all complete 

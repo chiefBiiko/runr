@@ -1,7 +1,5 @@
 # runWaterfall
 
-source('R/getFuncNames.R')
-
 #' Run a list of functions as waterfall.
 #'
 #' \code{runWaterfall} runs its input tasks sequentially, passing each task's 

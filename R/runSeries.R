@@ -1,7 +1,5 @@
 # runSeries
 
-source('R/getFuncNames.R')
-
 #' Run a list of functions as series.
 #'
 #' \code{runSeries} runs its input tasks sequentially returning either a named 
