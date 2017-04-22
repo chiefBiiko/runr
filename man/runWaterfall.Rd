@@ -2,7 +2,7 @@
 % Please edit documentation in R/runWaterfall.R
 \name{runWaterfall}
 \alias{runWaterfall}
-\title{Run a list of functions as waterfall.}
+\title{Run a list of functions as waterfall}
 \usage{
 runWaterfall(tasks = list(NULL), cb = NULL)
 }
@@ -35,6 +35,9 @@ non-\code{NULL} parameter. Within the callback simply check for an error
 with \code{is.null(error)}. If the \code{error} object is not \code{NULL} 
 it has a property \code{$task} indicating the function that failed.
 }
+\note{
+\code{\link{bind}} allows binding parameters to a function.
+}
 \examples{
 callback <- function(err, d) {
   if (is.null(err)) d else stop(err, err$task)
@@ -43,14 +46,11 @@ runWaterfall(list(function() 1L,
                   function(a) a + 2L, 
                   function(a) a + 3L), 
              callback)
-          
+
 }
 \seealso{
 \code{\link{runSeries}} \code{\link{runRace}} 
-\code{\link{runParallel}} \url{https://github.com/feross/run-waterfall}
-
-Other runFunctions: \code{\link{bind}},
-  \code{\link{runParallel}}, \code{\link{runRace}},
-  \code{\link{runSeries}}
+\code{\link{runParallel}} \code{\link{bind}}
+ \url{https://github.com/feross/run-waterfall}
 }
 

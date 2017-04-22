@@ -1,6 +1,6 @@
 # runRace
 
-#' Run a list of functions as race.
+#' Run a list of functions as race
 #'
 #' \code{runRace} runs its input tasks parallel until the very first return of 
 #' any of its tasks and returns either a named list (all \code{NULL} but one and
@@ -25,8 +25,10 @@
 #' with \code{is.null(error)}. If the \code{error} object is not \code{NULL} 
 #' it has a property \code{$task} indicating the function that failed.
 #' 
+#' @note \code{\link{bind}} allows binding parameters to a function.
+#' 
 #' @seealso \code{\link{runSeries}} \code{\link{runWaterfall}} 
-#' \code{\link{runParallel}}
+#' \code{\link{runParallel}} \code{\link{bind}}
 #' 
 #' @examples
 #' callback <- function(err, d) {
@@ -35,8 +37,7 @@
 #' runRace(list(function() {Sys.sleep(11L); return('first first')}, 
 #'              function() {Sys.sleep(10L); return('second first')}), 
 #'         callback)
-#'           
-#' @family runFunctions
+#'
 #' @export
 runRace <- function(tasks=list(NULL), cb=NULL) {
   stopifnot(all(sapply(tasks, function(t) is.function(t))), 

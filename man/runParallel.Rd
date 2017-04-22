@@ -2,7 +2,7 @@
 % Please edit documentation in R/runParallel.R
 \name{runParallel}
 \alias{runParallel}
-\title{Run a list of functions parallel.}
+\title{Run a list of functions parallel}
 \usage{
 runParallel(tasks = list(NULL), cb = NULL)
 }
@@ -35,6 +35,9 @@ non-\code{NULL} parameter. Within the callback simply check for an error
 with \code{is.null(error)}. If the \code{error} object is not \code{NULL} 
 it has a property \code{$task} indicating the function that failed.
 }
+\note{
+\code{\link{bind}} allows binding parameters to a function.
+}
 \examples{
 callback <- function(err, d) {
   if (is.null(err)) d else stop(err, err$task)
@@ -42,14 +45,11 @@ callback <- function(err, d) {
 runParallel(list(function(i=1L) while (i < 1e6L) i <- i + 1L, 
                  function() {Sys.sleep(7L); return('parapara!')}), 
             callback)
-          
+
 }
 \seealso{
 \code{\link{runSeries}} \code{\link{runWaterfall}} 
-\code{\link{runRace}} \url{https://github.com/feross/run-parallel}
-
-Other runFunctions: \code{\link{bind}},
-  \code{\link{runRace}}, \code{\link{runSeries}},
-  \code{\link{runWaterfall}}
+\code{\link{runRace}} \code{\link{bind}}
+\url{https://github.com/feross/run-parallel}
 }
 

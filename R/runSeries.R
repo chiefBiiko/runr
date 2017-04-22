@@ -1,6 +1,6 @@
 # runSeries
 
-#' Run a list of functions as series.
+#' Run a list of functions as series
 #'
 #' \code{runSeries} runs its input tasks sequentially returning either a named 
 #' list (on error \code{NULL}) or the value of a given callback.
@@ -25,8 +25,11 @@
 #' with \code{is.null(error)}. If the \code{error} object is not \code{NULL} 
 #' it has a property \code{$task} indicating the function that failed.
 #' 
+#' @note \code{\link{bind}} allows binding parameters to a function.
+#' 
 #' @seealso \code{\link{runWaterfall}} \code{\link{runRace}} 
-#' \code{\link{runParallel}} \url{https://github.com/feross/run-series}
+#' \code{\link{runParallel}} \code{\link{bind}} 
+#' \url{https://github.com/feross/run-series}
 #' 
 #' @examples
 #' moo <- function() 'mooooooo'
@@ -37,8 +40,7 @@
 #'                function() 2L, 
 #'                moo), 
 #'           callback)
-#'           
-#' @family runFunctions
+#'
 #' @export
 runSeries <- function(tasks=list(NULL), cb=NULL) {
   stopifnot(all(sapply(tasks, function(t) is.function(t))), 

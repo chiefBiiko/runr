@@ -1,6 +1,6 @@
 # runParallel
 
-#' Run a list of functions parallel.
+#' Run a list of functions parallel
 #'
 #' \code{runParallel} runs its input tasks parallel until all complete 
 #' and returns either a named list (on error \code{NULL}) or the value 
@@ -25,8 +25,11 @@
 #' with \code{is.null(error)}. If the \code{error} object is not \code{NULL} 
 #' it has a property \code{$task} indicating the function that failed.
 #' 
+#' @note \code{\link{bind}} allows binding parameters to a function.
+#' 
 #' @seealso \code{\link{runSeries}} \code{\link{runWaterfall}} 
-#' \code{\link{runRace}} \url{https://github.com/feross/run-parallel}
+#' \code{\link{runRace}} \code{\link{bind}}
+#' \url{https://github.com/feross/run-parallel}
 #' 
 #' @examples
 #' callback <- function(err, d) {
@@ -35,8 +38,7 @@
 #' runParallel(list(function(i=1L) while (i < 1e6L) i <- i + 1L, 
 #'                  function() {Sys.sleep(7L); return('parapara!')}), 
 #'             callback)
-#'           
-#' @family runFunctions
+#'
 #' @export
 runParallel <- function(tasks=list(NULL), cb=NULL) {
   stopifnot(all(sapply(tasks, function(t) is.function(t))), 

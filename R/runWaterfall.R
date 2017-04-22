@@ -1,6 +1,6 @@
 # runWaterfall
 
-#' Run a list of functions as waterfall.
+#' Run a list of functions as waterfall
 #'
 #' \code{runWaterfall} runs its input tasks sequentially, passing each task's 
 #' return value to the next task, and returns either a named list 
@@ -25,8 +25,11 @@
 #' with \code{is.null(error)}. If the \code{error} object is not \code{NULL} 
 #' it has a property \code{$task} indicating the function that failed.
 #' 
+#' @note \code{\link{bind}} allows binding parameters to a function.
+#' 
 #' @seealso \code{\link{runSeries}} \code{\link{runRace}} 
-#' \code{\link{runParallel}} \url{https://github.com/feross/run-waterfall}
+#' \code{\link{runParallel}} \code{\link{bind}}
+#'  \url{https://github.com/feross/run-waterfall}
 #' 
 #' @examples
 #' callback <- function(err, d) {
@@ -36,8 +39,7 @@
 #'                   function(a) a + 2L, 
 #'                   function(a) a + 3L), 
 #'              callback)
-#'           
-#' @family runFunctions
+#'
 #' @export
 runWaterfall <- function(tasks=list(NULL), cb=NULL) {
   stopifnot(all(sapply(tasks, function(t) is.function(t))), 

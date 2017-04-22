@@ -2,7 +2,7 @@
 % Please edit documentation in R/runRace.R
 \name{runRace}
 \alias{runRace}
-\title{Run a list of functions as race.}
+\title{Run a list of functions as race}
 \usage{
 runRace(tasks = list(NULL), cb = NULL)
 }
@@ -35,6 +35,9 @@ non-\code{NULL} parameter. Within the callback simply check for an error
 with \code{is.null(error)}. If the \code{error} object is not \code{NULL} 
 it has a property \code{$task} indicating the function that failed.
 }
+\note{
+\code{\link{bind}} allows binding parameters to a function.
+}
 \examples{
 callback <- function(err, d) {
   if (is.null(err)) d else stop(err, err$task)
@@ -42,14 +45,10 @@ callback <- function(err, d) {
 runRace(list(function() {Sys.sleep(11L); return('first first')}, 
              function() {Sys.sleep(10L); return('second first')}), 
         callback)
-          
+
 }
 \seealso{
 \code{\link{runSeries}} \code{\link{runWaterfall}} 
-\code{\link{runParallel}}
-
-Other runFunctions: \code{\link{bind}},
-  \code{\link{runParallel}}, \code{\link{runSeries}},
-  \code{\link{runWaterfall}}
+\code{\link{runParallel}} \code{\link{bind}}
 }
 

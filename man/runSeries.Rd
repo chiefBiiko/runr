@@ -2,7 +2,7 @@
 % Please edit documentation in R/runSeries.R
 \name{runSeries}
 \alias{runSeries}
-\title{Run a list of functions as series.}
+\title{Run a list of functions as series}
 \usage{
 runSeries(tasks = list(NULL), cb = NULL)
 }
@@ -35,6 +35,9 @@ non-\code{NULL} parameter. Within the callback simply check for an error
 with \code{is.null(error)}. If the \code{error} object is not \code{NULL} 
 it has a property \code{$task} indicating the function that failed.
 }
+\note{
+\code{\link{bind}} allows binding parameters to a function.
+}
 \examples{
 moo <- function() 'mooooooo'
 callback <- function(err, d) {
@@ -44,14 +47,11 @@ runSeries(list(function() 1L,
                function() 2L, 
                moo), 
           callback)
-          
+
 }
 \seealso{
 \code{\link{runWaterfall}} \code{\link{runRace}} 
-\code{\link{runParallel}} \url{https://github.com/feross/run-series}
-
-Other runFunctions: \code{\link{bind}},
-  \code{\link{runParallel}}, \code{\link{runRace}},
-  \code{\link{runWaterfall}}
+\code{\link{runParallel}} \code{\link{bind}} 
+\url{https://github.com/feross/run-series}
 }
 

@@ -1,4 +1,4 @@
-#' runr: Running Functions.
+#' runr: Running Functions
 #'
 #' Run a list of functions as series, waterfall, race or parallel.
 #' 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/bind.R
 \name{bind}
 \alias{bind}
-\title{Bind parameters to a function.}
+\title{Bind parameters to a function}
 \usage{
 bind(func, ...)
 }
@@ -23,9 +23,5 @@ runSeries(list(function() 0L,
 \seealso{
 \code{\link{runSeries}} \code{\link{runWaterfall}} 
 \code{\link{runRace}} \code{\link{runParallel}}
-
-Other runFunctions: \code{\link{runParallel}},
-  \code{\link{runRace}}, \code{\link{runSeries}},
-  \code{\link{runWaterfall}}
 }
 
