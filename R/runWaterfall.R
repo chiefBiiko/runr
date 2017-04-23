@@ -50,9 +50,14 @@ runWaterfall <- function(tasks=list(NULL), cb=NULL) {
   }
   # 
   if (!all(sapply(2L:length(tasks), function(i) {
-    length(formals(tasks[[i]])) == 1L
+    #length(formals(tasks[[i]])) || length(args(tasks[[i]]))  >= 1L
+    if (typeof(tasks[[i]]) == 'builtin') {
+      length(args(tasks[[i]]))  >= 1L
+    } else if (typeof(tasks[[i]]) == 'closure') {
+      length(formals(tasks[[i]])) >= 1L
+    }
   }))) {
-    stop('All tasks except the first must have exactly one parameter')
+    stop('All tasks except the first must have at least one parameter')
   }
   # setup
   games <- getFuncNames(tasks, cb)  # returns the names of tasks only
@@ -61,7 +66,7 @@ runWaterfall <- function(tasks=list(NULL), cb=NULL) {
   x <- list()  # accumulator and return object
   withRestarts(  # restarts allow breaking an apply iterator
     lapply(1L:length(tasks), function(i) {
-      tryCatch(x[games[i]] <<- if (i == 1L) {                         # try
+      tryCatch(x[[games[i]]] <<- if (i == 1L) {                         # try
                  tasks[[i]]()  # first task does not have predecessor
                } else {
                  tasks[[i]](x[[i - 1L]])  # all others do

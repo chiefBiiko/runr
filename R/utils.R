@@ -16,7 +16,7 @@ getFuncNames <- function(tasks, cb) {  # returns the names of tasks only
     sub('^.*tasks = list\\((.*)(\\),\\scb.+)|(\\)\\))$', '\\1', mcall, perl=T)
   }
   # final names
-  games <- if (grepl('function|bind\\(.+\\)', funcs, perl=T)) {  # anonymous
+  games <- if (grepl('function|bind\\(', funcs, perl=T)) {  # anonymous
     paste0(rep('function', length(tasks)), as.character(1L:length(tasks)))
   } else {  # case named only
     # split funcs on comma and space
