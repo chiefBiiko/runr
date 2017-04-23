@@ -1,14 +1,20 @@
-runr
-================
+---
+title: "runr"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, comment=NA)
+```
 
 > `runr` packs a set of higher order functions for running lists of functions in various modes.
 
--   [runSeries](#runseries)
--   [runWaterfall](#runwaterfall)
--   [runRace](#runrace)
--   [runParallel](#runparallel)
++ [runSeries]
++ [runWaterfall]
++ [runRace]
++ [runParallel]
 
-------------------------------------------------------------------------
+***
 
 ### runSeries
 
@@ -16,7 +22,7 @@ runr
 
 `runr::runSeries(tasks = list(NULL), cb = NULL)`
 
-``` r
+```{r}
 # some fictional workers
 moo <- function() 'moooo'
 zoo <- function() 1L:3L
@@ -24,21 +30,11 @@ zoo <- function() 1L:3L
 callback <- function(err, d) if (is.null(err)) d else stop(err, err$task)
 # run!
 runr::runSeries(list(moo, zoo, function() 1L), callback)
-```
+ ```
+Input functions can be anonymous or named. 
 
-    $function1
-    [1] "moooo"
-
-    $function2
-    [1] 1 2 3
-
-    $function3
-    [1] 1
-
-Input functions can be anonymous or named.
-
-------------------------------------------------------------------------
-
+***
+ 
 ### runWaterfall
 
 `runr::runWaterfall` runs its input tasks sequentially, passing each task's return value to the next task, and returns either a named list (on error `NULL`) or the value of a given callback.
@@ -47,25 +43,16 @@ All tasks except the first must have at least one parameter :ocean:
 
 `runr::runWaterfall(tasks = list(NULL), cb = NULL)`
 
-``` r
+```{r}
 # chain/pipe consecutive returns
 runr::runWaterfall(list(zoo,
                         base::factorial,  # reference names anyhow
                         runr::bind(Reduce, function(a, b) a + b)))  # binding
 ```
 
-    $function1
-    [1] 1 2 3
-
-    $function2
-    [1] 1 2 6
-
-    $function3
-    [1] 9
-
 `runr::bind` takes a function object and a variable sequence of parameters as inputs and returns a closure with the given parameters bound to it.
 
-------------------------------------------------------------------------
+***
 
 ### runRace
 
@@ -75,20 +62,14 @@ runr::runWaterfall(list(zoo,
 
 `runr::runRace(tasks = list(NULL), cb = NULL)`
 
-``` r
+```{r}
 # see how return is variable due to instable time lags between child launches
 runr::runRace(list(function() {Sys.sleep(11L); '1st first'}, 
                    function() {Sys.sleep(10L); '2nd first'}), 
               callback)
 ```
 
-    $function1
-    [1] "1st first"
-
-    $function2
-    NULL
-
-------------------------------------------------------------------------
+***
 
 ### runParallel
 
@@ -96,7 +77,7 @@ runr::runRace(list(function() {Sys.sleep(11L); '1st first'},
 
 `runr::runParallel(tasks = list(NULL), cb = NULL)`
 
-``` r
+```{r}
 stalk <- function() {                   # io sth
   jsonlite::fromJSON('https://api.github.com/users/chiefBiiko')$hireable
 }
@@ -117,5 +98,3 @@ runr::runParallel(list(stalk,
                        }),
                   hireme)
 ```
-
-    [1] "dev: @chiefBiiko | hireable: TRUE!!!!!!!!!! | <3"

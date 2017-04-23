@@ -15,7 +15,8 @@
 #' (default \code{NULL}) as first parameter and a named list of the tasks' 
 #' return values (on error \code{NULL}) as second parameter.
 #' 
-#' @details If an error is encountered while calling the tasks without a 
+#' @details All tasks except the first must have at least one parameter. 
+#' If an error is encountered while calling the tasks without a 
 #' callback \code{runWaterfall} immediately stops execution and returns 
 #' \code{NULL}. If an error is encountered and a callback is defined 
 #' \code{runWaterfall} immediately stops execution and calls the callback with 
