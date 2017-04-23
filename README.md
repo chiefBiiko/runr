@@ -71,7 +71,7 @@ runr::runWaterfall(list(zoo,
 
 `runr::runRace` runs its input tasks parallel until the very first return of any of its tasks and returns either a named list (all `NULL` but one and on error `NULL`) or the value of a given callback.
 
-*Currently `runr::bind` can neither be used in conjunction with `runr::runRace` nor `runr::runParallel` because each input task to the latter pair is run in a separate child process...not a big deal...might get a fix.*
+-   :construction: Currently `runr::bind` can neither be used in conjunction with `runr::runRace` nor `runr::runParallel` because each input task to the latter pair is run in a separate child process...:trollface:...might get a fix. :factory:\*
 
 `runr::runRace(tasks = list(NULL), cb = NULL)`
 
@@ -83,10 +83,10 @@ runr::runRace(list(function() {Sys.sleep(11L); '1st first'},
 ```
 
     $function1
-    [1] "1st first"
+    NULL
 
     $function2
-    NULL
+    [1] "2nd first"
 
 ------------------------------------------------------------------------
 
@@ -97,8 +97,8 @@ runr::runRace(list(function() {Sys.sleep(11L); '1st first'},
 `runr::runParallel(tasks = list(NULL), cb = NULL)`
 
 ``` r
-stalk <- function() {                   # io sth
-  jsonlite::fromJSON('https://api.github.com/users/chiefBiiko')$hireable
+stalk <- function(user='chiefBiiko') {  # io sth
+  jsonlite::fromJSON(sprintf('https://api.github.com/users/%s', user))$hireable
 }
 emph <- function(n=10L) strrep('!', n)  # do sth
 hireme <- function(err, d) {            # callback
