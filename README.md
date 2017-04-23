@@ -10,7 +10,8 @@ runr
 
 ------------------------------------------------------------------------
 
-### runSeries
+runSeries
+---------
 
 `runr::runSeries` runs its input tasks sequentially returning either a named list (on error `NULL`) or the value of a given callback.
 
@@ -39,7 +40,8 @@ Input functions can be anonymous or named.
 
 ------------------------------------------------------------------------
 
-### runWaterfall
+runWaterfall
+------------
 
 `runr::runWaterfall` runs its input tasks sequentially, passing each task's return value to the next task, and returns either a named list (on error `NULL`) or the value of a given callback.
 
@@ -67,11 +69,12 @@ runr::runWaterfall(list(zoo,
 
 ------------------------------------------------------------------------
 
-### runRace
+runRace
+-------
 
 `runr::runRace` runs its input tasks parallel until the very first return of any of its tasks and returns either a named list (all `NULL` but one and on error `NULL`) or the value of a given callback.
 
--   :construction: Currently `runr::bind` can neither be used in conjunction with `runr::runRace` nor `runr::runParallel` because each input task to the latter pair is run in a separate child process...:trollface:...might get a fix. :factory:\*
+:construction: Currently `runr::bind` can neither be used in conjunction with `runr::runRace` nor `runr::runParallel` because each input task to the latter pair is run in a separate child process...:trollface:...might get a fix. :factory:
 
 `runr::runRace(tasks = list(NULL), cb = NULL)`
 
@@ -90,7 +93,8 @@ runr::runRace(list(function() {Sys.sleep(11L); '1st first'},
 
 ------------------------------------------------------------------------
 
-### runParallel
+runParallel
+-----------
 
 `runr::runParallel` runs its input tasks parallel until all complete and returns either a named list (on error `NULL`) or the value of a given callback.
 
