@@ -47,7 +47,7 @@ runSeries <- function(tasks=list(NULL), cb=NULL) {
             length(tasks) >  1L, 
             is.null(cb) || is.function(cb))
   if (is.function(cb) && length(formals(cb)) != 2L) {
-    stop('callback must have two parameters: 1st data, 2nd error')
+    stop('callback must have two parameters: 1st error, 2nd data')
   }
   # setup
   games <- getFuncNames(tasks, cb)  # returns the names of tasks only
@@ -65,7 +65,7 @@ runSeries <- function(tasks=list(NULL), cb=NULL) {
     stopLoop=function() NULL  # if error break immediately and return NULL
   )
   # set names
-  if (length(games) > length(x)) games <- games[1:length(x)]
+  if (length(games) > length(x)) games <- games[1L:length(x)]
   if (is.list(x)) names(x) <- games
   # returning
   return(if (is.function(cb)) cb(err, x) else x)

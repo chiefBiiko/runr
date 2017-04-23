@@ -45,7 +45,7 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
             length(tasks) >  1L, 
             is.null(cb) || is.function(cb))
   if (is.function(cb) && length(formals(cb)) != 2L) {
-    stop('callback must have two parameters: 1st data, 2nd error')
+    stop('callback must have two parameters: 1st error, 2nd data')
   }
   # input function names
   games <- getFuncNames(tasks, cb)  # returns the names of tasks only

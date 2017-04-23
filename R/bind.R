@@ -17,7 +17,7 @@
 #'
 #' @export
 bind <- function(func, ...) {  # func proto
-  stopifnot(!missing(func), !missing(...))
+  stopifnot(is.function(func), !missing(...))
   bound <- list(...)  # static defaults
   function(...) {  # returning a closure
     new <- list(...)
