@@ -45,7 +45,7 @@ runWaterfall
 
 `runr::runWaterfall` runs its input tasks sequentially, passing each task's return value to the next task, and returns either a named list (on error `NULL`) or the value of a given callback.
 
-All tasks except the first must have at least one parameter :ocean:
+:ocean: All tasks except the first must have at least one parameter.
 
 `runr::runWaterfall(tasks = list(NULL), cb = NULL)`
 
