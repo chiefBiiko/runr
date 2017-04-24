@@ -7,10 +7,10 @@
 runSeries(tasks = list(NULL), cb = NULL)
 }
 \arguments{
-\item{tasks}{List of function objects (anonymous and named) 
+\item{tasks}{List of functions (anonymous and named) 
 \strong{required}.}
 
-\item{cb}{Anonymous or named function object with signature 
+\item{cb}{Anonymous or named function with signature 
 \code{cb(error, data)} \strong{optional}.}
 }
 \value{

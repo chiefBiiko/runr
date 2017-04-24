@@ -25,14 +25,16 @@ devtools::install_github('chiefBiiko/runr')
 API
 ---
 
-`runr::runSeries(tasks = list(NULL), cb = NULL)`
+`runr::run*(tasks = list(NULL), cb = NULL)`
 
 -   `tasks` List of functions **required**
 -   `cb` Function with signature `cb(error, data)` **optional**
 
-------------------------------------------------------------------------
+Values for the `tasks` or `cb` parameter can be defined anonymous or referenced to via a valid function name. If a callback is defined it will always have exactly one non-`NULL` argument only. Without errors during task execution the `data` argument of the callback is a named list. In case of errors during task execution the `error` argument of the callback is an ordinary error object with one additional property `$task` which indicates the function that threw.
 
-Values for the `tasks` or `cb` parameter can be defined anonymous or referenced to via a valid function name. Specifying a callback allows easy exception handling.
+`runr::bind` is an exported helper that allows binding parameters to functions (`?runr::bind`).
+
+------------------------------------------------------------------------
 
 runSeries
 ---------
@@ -72,7 +74,7 @@ runWaterfall
 # chain/pipe consecutive returns
 runr::runWaterfall(list(zoo,
                         base::factorial,  # reference names anyhow
-                        runr::bind(Reduce, function(a, b) a + b)))  # binding
+                        runr::bind(Reduce, function(a, b) a + b)))  # binding params
 ```
 
     $function1
@@ -101,10 +103,10 @@ runr::runRace(list(function() {Sys.sleep(11L); '1st first'},
 ```
 
     $function1
-    NULL
+    [1] "1st first"
 
     $function2
-    [1] "2nd first"
+    NULL
 
 ------------------------------------------------------------------------
 
@@ -121,6 +123,7 @@ hireme <- function(err, d) {
           as.character(d$function1$hireable), 
           d$function2, d$function3)
 }
+
 # see ya!
 runr::runParallel(list(runr::bind(jsonlite::fromJSON, 
                                   'https://api.github.com/users/chiefBiiko'), 

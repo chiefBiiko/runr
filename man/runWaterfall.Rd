@@ -7,9 +7,9 @@
 runWaterfall(tasks = list(NULL), cb = NULL)
 }
 \arguments{
-\item{tasks}{List of function objects (anonymous and named) \strong{required}.}
+\item{tasks}{List of functions (anonymous and named) \strong{required}.}
 
-\item{cb}{Anonymous or named function object with signature 
+\item{cb}{Anonymous or named function with signature 
 \code{cb(error, data)} \strong{optional}.}
 }
 \value{
@@ -25,6 +25,7 @@ return value to the next task, and returns either a named list
 (on error \code{NULL}) or the value of a given callback.
 }
 \details{
+All tasks except the first must have at least one parameter. 
 If an error is encountered while calling the tasks without a 
 callback \code{runWaterfall} immediately stops execution and returns 
 \code{NULL}. If an error is encountered and a callback is defined 

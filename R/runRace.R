@@ -6,8 +6,8 @@
 #' any of its tasks and returns either a named list (all \code{NULL} but one and
 #' on error \code{NULL}) or the value of a given callback.
 #'
-#' @param tasks List of function objects (anonymous and named) \strong{required}.
-#' @param cb Anonymous or named function object with signature 
+#' @param tasks List of functions (anonymous and named) \strong{required}.
+#' @param cb Anonymous or named function with signature 
 #' \code{cb(error, data)} \strong{optional}.
 #' @return If \code{cb} is \code{NULL} the tasks' return values are returned 
 #' in a named list (on error \code{NULL}). If \code{cb} is a function it is 
