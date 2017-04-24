@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo=TRUE, comment=NA)
 
 ***
 
-### Get it
+## Get it
 
 ```{r, eval=F}
 devtools::install_github('chiefBiiko/runr')
@@ -27,7 +27,7 @@ devtools::install_github('chiefBiiko/runr')
 
 ***
 
-### API
+## API
 
 `runr::runSeries(tasks = list(NULL), cb = NULL)`
 

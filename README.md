@@ -13,7 +13,8 @@ runr
 
 ------------------------------------------------------------------------
 
-### Get it
+Get it
+------
 
 ``` r
 devtools::install_github('chiefBiiko/runr')
@@ -21,7 +22,8 @@ devtools::install_github('chiefBiiko/runr')
 
 ------------------------------------------------------------------------
 
-### API
+API
+---
 
 `runr::runSeries(tasks = list(NULL), cb = NULL)`
 
