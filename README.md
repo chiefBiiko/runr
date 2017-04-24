@@ -1,28 +1,49 @@
 runr
 ================
 
-> `runr` packs a set of higher order functions for running lists of functions in various modes.
+`runr` packs a set of higher order functions for running lists of functions in various modes.
 
--   [runSeries](#runseries)
--   [runWaterfall](#runwaterfall)
--   [runRace](#runrace)
--   [runParallel](#runparallel)
+:movie\_camera: *[runSeries](#runseries)*
+
+:ocean: *[runWaterfall](#runwaterfall)*
+
+:running: *[runRace](#runrace)*
+
+:100: *[runParallel](#runparallel)*
 
 ------------------------------------------------------------------------
+
+### Get it
+
+``` r
+devtools::install_github('chiefBiiko/runr')
+```
+
+------------------------------------------------------------------------
+
+### API
+
+`runr::runSeries(tasks = list(NULL), cb = NULL)`
+
+-   `tasks` List of functions **required**
+-   `cb` Function with signature `cb(error, data)` **optional**
+
+------------------------------------------------------------------------
+
+Values for the `tasks` or `cb` parameter can be defined anonymous or referenced to via a valid function name. Specifying a callback allows easy exception handling.
 
 runSeries
 ---------
 
 `runr::runSeries` runs its input tasks sequentially returning either a named list (on error `NULL`) or the value of a given callback.
 
-`runr::runSeries(tasks = list(NULL), cb = NULL)`
-
 ``` r
-# some fictional workers
+# some setup
 moo <- function() 'moooo'
 zoo <- function() 1L:3L
 # callback skeleton - must have exactly two parameters
 callback <- function(err, d) if (is.null(err)) d else stop(err, err$task)
+
 # run!
 runr::runSeries(list(moo, zoo, function() 1L), callback)
 ```
@@ -36,8 +57,6 @@ runr::runSeries(list(moo, zoo, function() 1L), callback)
     $function3
     [1] 1
 
-Input functions can be anonymous or named.
-
 ------------------------------------------------------------------------
 
 runWaterfall
@@ -46,8 +65,6 @@ runWaterfall
 `runr::runWaterfall` runs its input tasks sequentially, passing each task's return value to the next task, and returns either a named list (on error `NULL`) or the value of a given callback.
 
 :ocean: All tasks except the first must have at least one parameter.
-
-`runr::runWaterfall(tasks = list(NULL), cb = NULL)`
 
 ``` r
 # chain/pipe consecutive returns
@@ -74,10 +91,6 @@ runRace
 
 `runr::runRace` runs its input tasks parallel until the very first return of any of its tasks and returns either a named list (all `NULL` but one and on error `NULL`) or the value of a given callback.
 
-:construction: Currently `runr::bind` can neither be used in conjunction with `runr::runRace` nor `runr::runParallel` because each input task to the latter pair is run in a separate child process...:trollface:...might get a fix. :factory:
-
-`runr::runRace(tasks = list(NULL), cb = NULL)`
-
 ``` r
 # see how return is variable due to instable time lags between child launches
 runr::runRace(list(function() {Sys.sleep(11L); '1st first'}, 
@@ -98,27 +111,19 @@ runParallel
 
 `runr::runParallel` runs its input tasks parallel until all complete and returns either a named list (on error `NULL`) or the value of a given callback.
 
-`runr::runParallel(tasks = list(NULL), cb = NULL)`
-
 ``` r
-stalk <- function(user='chiefBiiko') {  # io sth
-  jsonlite::fromJSON(sprintf('https://api.github.com/users/%s', user))$hireable
-}
-emph <- function(n=10L) strrep('!', n)  # do sth
-hireme <- function(err, d) {            # callback
+# callback
+hireme <- function(err, d) {
   if (!is.null(err)) stop(err, err$task)  # check n go
   sprintf('dev: @chiefBiiko | hireable: %s%s | %s',
-          as.character(d$function1),
-          d$function2,
-          d$function3)
+          as.character(d$function1$hireable), 
+          d$function2, d$function3)
 }
 # see ya!
-runr::runParallel(list(stalk,
-                       emph,
-                       function() {
-                         Sys.sleep(3.6)
-                         gsub('[^3<]', '', '<kreuzberg36original>')
-                       }),
+runr::runParallel(list(runr::bind(jsonlite::fromJSON, 
+                                  'https://api.github.com/users/chiefBiiko'), 
+                       runr::bind(strrep, '!', 10L),
+                       function() gsub('[^3<]', '', '<kreuzberg36original>')), 
                   hireme)
 ```
 
