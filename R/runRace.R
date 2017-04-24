@@ -59,27 +59,34 @@ runRace <- function(tasks=list(NULL), cb=NULL) {
   } else {
     unlink('runParallel/*')    # clear old stuff
   }
-  # clone parent's global environment data
-  save(list=ls(all.names=T, envir=.GlobalEnv), 
-       file="runParallel/clone.RData", envir=.GlobalEnv)
   # filenames
   FLNMS_R <- lapply(1L:length(games), function(i) {
     file.path('runParallel', paste0('xp.', games[i], '.R'))
   })
   FLNMS_LOG <- lapply(FLNMS_R, function(n) sub('R$', 'log', n, perl=T))
   FLNMS_RDS <- lapply(FLNMS_R, function(n) sub('R$', 'rds', n, perl=T))
+  FLNMS_BND <- lapply(FLNMS_RDS, function(n) sub('xp', 'bound.xp', n, perl=T))
+  # clone parent's global environment data
+  save(list=ls(all.names=T, envir=.GlobalEnv), 
+       file="runParallel/clone.RData", envir=.GlobalEnv)
   # further preparation
   PID <- list()  # memory for PIDs of tasks
   lapply(1L:length(tasks), function(i) {
+    # conditionally transfer bound environments
+    if (isTRUE(attr(tasks[[i]], 'bound'))) {  # save bound environments
+      saveRDS(environment(tasks[[i]]), FLNMS_BND[[i]]) 
+    }
     # prepare input tasks
-    xp.task <- sprintf(paste0('RTN <- NULL\n', 
+    xp.task <- sprintf(paste0('%s\n',  # for function object
+                              '%s\n',  # for bound data
+                              'RTN <- NULL\n', 
                               'runParallel_END <- \'runParallel_EOF\'\n',
-                              'load(\'runParallel/clone.RData\')\n',
+                              'load(\'runParallel/clone.RData\')\n', 
                               'list(\n', 
                               'tryCatch(\n',
-                              'assign(\'RTN\', (%s)(), envir=.GlobalEnv),\n',  
+                              'assign(\'RTN\', (FUN)(), envir=.GlobalEnv),\n',  
                               'error=function(e) {\n',
-                              'assign(\'runParallel_END\', ',  
+                              'assign(\'runParallel_END\', ', 
                               'geterrmessage(), envir=.GlobalEnv)\n',
                               'assign(\'RTN\', e, envir=.GlobalEnv)\n',
                               '}\n',
@@ -87,12 +94,17 @@ runRace <- function(tasks=list(NULL), cb=NULL) {
                               'writeLines(runParallel_END, \'%s\')',
                               ')\n', 
                               'saveRDS(RTN, file=\'%s\')'), 
-                       paste0(deparse(tasks[[i]]), sep='\n', collapse=''),
+                       paste0('FUN <- ', 
+                              paste0(deparse(tasks[[i]]), sep='\n', collapse='')),
+                       if (isTRUE(attr(tasks[[i]], 'bound'))) {
+                         paste0('BOUND <- readRDS(\'', FLNMS_BND[[i]], '\')\n',
+                                'environment(FUN) <- BOUND')
+                       } else { '' },
                        FLNMS_LOG[[i]],
                        FLNMS_RDS[[i]])
     # export prepared tasks
     cat(xp.task, file=FLNMS_R[[i]])
-    # make a LOG log for each xp.task
+    # make a log for each xp.task
     cat('', file=FLNMS_LOG[[i]])
     # start child processes non-blocking and record their pids
     PID[[games[i]]] <<- sys::exec_background('Rscript', FLNMS_R[[i]], F, F)

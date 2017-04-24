@@ -19,8 +19,10 @@
 bind <- function(func, ...) {  # func proto
   stopifnot(is.function(func), !missing(...))
   bound <- list(...)  # static defaults
+  structure(
   function(...) {  # returning a closure
     new <- list(...)
     do.call(func, c(bound, new))
-  }
+  }, 
+  bound=T)
 }

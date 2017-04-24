@@ -14,8 +14,4 @@ testthat::test_that('with exceptions no data return', {
   testthat::expect_error(runWaterfall(list(function() 1L,
                                            function() a + b + 1L)))
   testthat::expect_error(runParallel(list(doo)))
-  # currently runr::bind does neither work with runr::runRace nor 
-  # runr::runParallel - be aware
-  testthat::expect_null(runParallel(list(doo, bind(factorial, 1:3),
-                                         bind(jsonlite::fromJSON, 'https://api.github.com/users/chiefBiiko'))))
 })
