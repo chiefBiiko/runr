@@ -28,11 +28,16 @@ API
 `runr::run*(tasks = list(NULL), cb = NULL)`
 
 -   `tasks` List of functions **required**
--   `cb` Function with signature `cb(error, data)` **optional**
+-   `cb` Callback with signature `cb(error, data)` **optional**
 
-Values for the `tasks` or `cb` parameter can be defined anonymous or referenced to via a valid function name. If a callback is defined it will always have exactly one non-`NULL` argument only. Without errors during task execution the `data` argument of the callback is a named list. In case of errors during task execution the `error` argument of the callback is an ordinary error object with one additional property `$task` which indicates the function that threw.
+Values for the `tasks` or `cb` parameter can be defined anonymous or referenced to via a valid function name. If a callback is defined it will always have exactly one non-`NULL` argument only. Without errors during task execution the `data` argument of the callback is a named list. In case of errors during task execution the `error` argument of the callback is an ordinary error object with *one* additional property `$task` which indicates the function that threw.
 
-`runr::bind` is an exported helper that allows binding parameters to functions (`?runr::bind`).
+``` r
+# callback skeleton - must have exactly two parameters
+callback <- function(err, d) if (is.null(err)) d else stop(err, err$task)
+```
+
+`runr::bind` is an exported helper that allows binding parameters to functions. It takes a function and a variable sequence of parameters as inputs and returns a closure with the given parameters bound to it (`?runr::bind`).
 
 ------------------------------------------------------------------------
 
@@ -42,11 +47,9 @@ runSeries
 `runr::runSeries` runs its input tasks sequentially returning either a named list (on error `NULL`) or the value of a given callback.
 
 ``` r
-# some setup
+# some named functions
 moo <- function() 'moooo'
 zoo <- function() 1L:3L
-# callback skeleton - must have exactly two parameters
-callback <- function(err, d) if (is.null(err)) d else stop(err, err$task)
 
 # run!
 runr::runSeries(list(moo, zoo, function() 1L), callback)
@@ -85,8 +88,6 @@ runr::runWaterfall(list(zoo,
 
     $function3
     [1] 9
-
-`runr::bind` takes a function object and a variable sequence of parameters as inputs and returns a closure with the given parameters bound to it.
 
 ------------------------------------------------------------------------
 

@@ -22,7 +22,7 @@
 #' \code{runWaterfall} immediately stops execution and calls the callback with 
 #' the \code{data} parameter set to \code{NULL} and the \code{error} parameter 
 #' set to the encountered error. Thus, the callback will always have only one 
-#' non-\code{NULL} parameter. Within the callback simply check for an error 
+#' non-\code{NULL} argument. Within the callback simply check for an error 
 #' with \code{is.null(error)}. If the \code{error} object is not \code{NULL} 
 #' it has a property \code{$task} indicating the function that failed.
 #' 
