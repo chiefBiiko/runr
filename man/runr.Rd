@@ -10,11 +10,10 @@ Run a list of functions as series, waterfall, race or parallel.
 }
 \section{Exports}{
 
-  runSeries
-  runWaterfall
-  runRace
-  runParallel
-  bind
+  \code{\link{runSeries}}
+  \code{\link{runWaterfall}}
+  \code{\link{runRace}}
+  \code{\link{runParallel}}
 }
 
 \section{Repository}{
