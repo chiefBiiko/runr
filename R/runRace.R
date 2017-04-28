@@ -25,10 +25,8 @@
 #' with \code{is.null(error)}. If the \code{error} object is not \code{NULL} 
 #' it has a property \code{$task} indicating the function that failed.
 #' 
-#' @note \code{\link{bind}} allows binding parameters to a function.
-#' 
 #' @seealso \code{\link{runSeries}} \code{\link{runWaterfall}} 
-#' \code{\link{runParallel}} \code{\link{bind}}
+#' \code{\link{runParallel}}
 #' 
 #' @examples
 #' callback <- function(err, d) {
