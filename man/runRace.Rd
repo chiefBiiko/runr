@@ -35,9 +35,6 @@ non-\code{NULL} argument. Within the callback simply check for an error
 with \code{is.null(error)}. If the \code{error} object is not \code{NULL} 
 it has a property \code{$task} indicating the function that failed.
 }
-\note{
-\code{\link{bind}} allows binding parameters to a function.
-}
 \examples{
 callback <- function(err, d) {
   if (is.null(err)) d else stop(err, err$task)
@@ -49,6 +46,6 @@ runRace(list(function() {Sys.sleep(11L); return('first first')},
 }
 \seealso{
 \code{\link{runSeries}} \code{\link{runWaterfall}} 
-\code{\link{runParallel}} \code{\link{bind}}
+\code{\link{runParallel}}
 }
 
