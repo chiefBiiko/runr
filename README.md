@@ -40,7 +40,7 @@ callback <- function(err, d) {
 }
 ```
 
-[`bounds`](https://github.com/chiefBiiko/bounds) has an export `bounds::bind` that allows binding parameters to functions. It takes a function and a variable sequence of parameters as inputs and returns a closure with the given parameters bound to it. Might come in handy at times.
+[`bounds`](https://github.com/chiefBiiko/bounds), a dependency of `runr`, has an export `bounds::bind` that allows binding parameters to functions. It takes a function and a variable sequence of parameters as inputs and returns a closure with the given parameters bound to it. Might come in handy at times.
 
 ------------------------------------------------------------------------
 
