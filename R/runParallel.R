@@ -52,24 +52,24 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
   # setup
   on.exit({  # clean up
     try(lapply(PID, function(pid) tools::pskill(pid)), silent=T)
-    unlink('runParallel', recursive=T)
+    unlink('runr', recursive=T)
   })
   # io
-  if (!dir.exists('runParallel')) {
-    dir.create('runParallel')  # root for all tasks
+  if (!dir.exists('runr')) {
+    dir.create('runr')  # root for all tasks
   } else {
-    unlink('runParallel/*')    # clear old stuff
+    unlink('runr/*')    # clear old stuff
   }
   # filenames
   FLNMS_R <- lapply(1L:length(games), function(i) {
-    file.path('runParallel', paste0('xp.', games[i], '.R'))
+    file.path('runr', paste0('xp.', games[i], '.R'))
   })
   FLNMS_LOG <- lapply(FLNMS_R, function(n) sub('R$', 'log', n, perl=T))
   FLNMS_RDS <- lapply(FLNMS_R, function(n) sub('R$', 'rds', n, perl=T))
   FLNMS_BND <- lapply(FLNMS_RDS, function(n) sub('xp', 'bound.xp', n, perl=T))
   # clone parent's global environment data
   save(list=ls(all.names=T, envir=.GlobalEnv), 
-       file="runParallel/clone.RData", envir=.GlobalEnv)
+       file="runr/clone.RData", envir=.GlobalEnv)
   # further preparation
   PID <- list()  # memory for PIDs of tasks
   lapply(1L:length(tasks), function(i) {
@@ -81,18 +81,18 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
     xp.task <- sprintf(paste0('%s\n',  # for function object
                               '%s\n',  # for bound data
                               'RTN <- NULL\n', 
-                              'runParallel_END <- \'runParallel_EOF\'\n',
-                              'load(\'runParallel/clone.RData\')\n', 
+                              'runr_END <- \'runr_EOF\'\n',
+                              'load(\'runr/clone.RData\')\n', 
                               'list(\n', 
                               'tryCatch(\n',
                               'assign(\'RTN\', (FUN)(), envir=.GlobalEnv),\n',  
                               'error=function(e) {\n',
-                              'assign(\'runParallel_END\', ', 
+                              'assign(\'runr_END\', ', 
                               'geterrmessage(), envir=.GlobalEnv)\n',
                               'assign(\'RTN\', e, envir=.GlobalEnv)\n',
                               '}\n',
                               '),\n',
-                              'writeLines(runParallel_END, \'%s\')',
+                              'writeLines(runr_END, \'%s\')',
                               ')\n', 
                               'saveRDS(RTN, file=\'%s\')'), 
                        paste0('FUN <- ', 
@@ -118,7 +118,7 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
   repeat {  # block
     # check if error occurred
     if (!status[[games[i]]] &&
-        countMatch(FLNMS_LOG[[i]], '[^runParallel_EOF]') > 0L &&
+        countMatch(FLNMS_LOG[[i]], '[^runr_EOF]') > 0L &&
         file.exists(FLNMS_RDS[[i]])) {
       x <- NULL  # set data to NULL
       Sys.sleep(1L)  # wait 4 OS to commit
@@ -129,7 +129,7 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
     }
     # check if current task completed
     if (!status[[games[i]]] &&
-        countMatch(FLNMS_LOG[[i]], 'runParallel_EOF', perl=F, fixed=T) > 0L && 
+        countMatch(FLNMS_LOG[[i]], 'runr_EOF', perl=F, fixed=T) > 0L && 
         file.exists(FLNMS_RDS[[i]])) {
       # read in return value
       Sys.sleep(1L)  # wait 4 OS to commit
