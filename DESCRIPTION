@@ -1,11 +1,13 @@
 Package: runr
 Title: Running Functions
 Version: 0.0.0.9000
-Authors@R: person("Noah", "Schwarz", email = "first.last@example.com", role = c("aut", "cre"))
+Authors@R: person("Noah", "Schwarz", email = "noah.anabiik.schwarz@gmail.com", role = c("aut", "cre"))
 Description: Run a list of functions as series, waterfall, race or parallel.
 Imports:
     sys,
     tools
+Remotes:
+    github::chiefBiiko/bounds
 Depends:
     R (>= 3.3.2)
 License: MIT + file LICENSE

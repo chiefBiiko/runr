@@ -74,7 +74,7 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
   PID <- list()  # memory for PIDs of tasks
   lapply(1L:length(tasks), function(i) {
     # conditionally transfer bound environments
-    if (isTRUE(attr(tasks[[i]], 'bound'))) {  # save bound environments
+    if (bounds::isBound(tasks[[i]])) {  # save bound environments
       saveRDS(environment(tasks[[i]]), FLNMS_BND[[i]]) 
     }
     # prepare input tasks
@@ -97,7 +97,7 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
                               'saveRDS(RTN, file=\'%s\')'), 
                        paste0('FUN <- ', 
                               paste0(deparse(tasks[[i]]), sep='\n', collapse='')),
-                       if (isTRUE(attr(tasks[[i]], 'bound'))) {
+                       if (bounds::isBound(tasks[[i]])) {
                          paste0('BOUND <- readRDS(\'', FLNMS_BND[[i]], '\')\n',
                                 'environment(FUN) <- BOUND')
                        } else { '' },
