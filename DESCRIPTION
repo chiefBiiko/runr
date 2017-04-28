@@ -5,7 +5,9 @@ Authors@R: person("Noah", "Schwarz", email = "noah.anabiik.schwarz@gmail.com", r
 Description: Run a list of functions as series, waterfall, race or parallel.
 Imports:
     sys,
-    tools
+    tools,
+    bounds
+Remotes: github::chiefBiiko/bounds
 Depends:
     R (>= 3.3.2)
 License: MIT + file LICENSE

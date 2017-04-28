@@ -51,24 +51,24 @@ runRace <- function(tasks=list(NULL), cb=NULL) {
   # setup
   on.exit({  # clean up
     try(lapply(PID, function(pid) tools::pskill(pid)), silent=T)
-    unlink('runr', recursive=T)
+    unlink('.runr', recursive=T)
   })
   # io
-  if (!dir.exists('runr')) {
-    dir.create('runr')  # root for all tasks
+  if (!dir.exists('.runr')) {
+    dir.create('.runr')  # root for all tasks
   } else {
-    unlink('runr/*')    # clear old stuff
+    unlink('.runr/*')    # clear old stuff
   }
   # filenames
   FLNMS_R <- lapply(1L:length(games), function(i) {
-    file.path('runr', paste0('xp.', games[i], '.R'))
+    file.path('.runr', paste0('xp.', games[i], '.R'))
   })
   FLNMS_LOG <- lapply(FLNMS_R, function(n) sub('R$', 'log', n, perl=T))
   FLNMS_RDS <- lapply(FLNMS_R, function(n) sub('R$', 'rds', n, perl=T))
   FLNMS_BND <- lapply(FLNMS_RDS, function(n) sub('xp', 'bound.xp', n, perl=T))
   # clone parent's global environment data
   save(list=ls(all.names=T, envir=.GlobalEnv), 
-       file="runr/clone.RData", envir=.GlobalEnv)
+       file=".runr/clone.RData", envir=.GlobalEnv)
   # further preparation
   PID <- list()  # memory for PIDs of tasks
   lapply(1L:length(tasks), function(i) {
@@ -81,7 +81,7 @@ runRace <- function(tasks=list(NULL), cb=NULL) {
                               '%s\n',  # for bound data
                               'RTN <- NULL\n', 
                               'runr_END <- \'runr_EOF\'\n',
-                              'load(\'runr/clone.RData\')\n', 
+                              'load(\'.runr/clone.RData\')\n', 
                               'list(\n', 
                               'tryCatch(\n',
                               'assign(\'RTN\', (FUN)(), envir=.GlobalEnv),\n',  
