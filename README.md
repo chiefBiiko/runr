@@ -34,10 +34,13 @@ Values for the `tasks` or `cb` parameter can be defined anonymous or referenced 
 
 ``` r
 # callback skeleton - must have exactly two parameters
-callback <- function(err, d) if (is.null(err)) d else stop(err, err$task)
+callback <- function(err, d) {
+  if (!is.null(err)) stop(err, err$task)
+  d
+}
 ```
 
-`runr::bind` is an exported helper that allows binding parameters to functions. It takes a function and a variable sequence of parameters as inputs and returns a closure with the given parameters bound to it (`?runr::bind`).
+[`bounds`](https://github.com/chiefBiiko/bounds) has an export `bounds::bind` that allows binding parameters to functions. It takes a function and a variable sequence of parameters as inputs and returns a closure with the given parameters bound to it. Might come in handy at times.
 
 ------------------------------------------------------------------------
 
@@ -52,17 +55,17 @@ moo <- function() 'moooo'
 zoo <- function() 1L:3L
 
 # run!
-runr::runSeries(list(moo, zoo, function() 1L), callback)
+runr::runSeries(list(function() 1L, moo, zoo), callback)
 ```
 
     $function1
-    [1] "moooo"
+    [1] 1
 
     $function2
-    [1] 1 2 3
+    [1] "moooo"
 
     $function3
-    [1] 1
+    [1] 1 2 3
 
 ------------------------------------------------------------------------
 
@@ -77,7 +80,7 @@ runWaterfall
 # chain/pipe consecutive returns
 runr::runWaterfall(list(zoo,
                         base::factorial,  # reference names anyhow
-                        runr::bind(Reduce, function(a, b) a + b)))  # binding params
+                        bounds::bind(Reduce, function(a, b) a + b)))  # binding params
 ```
 
     $function1
@@ -104,10 +107,10 @@ runr::runRace(list(function() {Sys.sleep(11L); '1st first'},
 ```
 
     $function1
-    [1] "1st first"
+    NULL
 
     $function2
-    NULL
+    [1] "2nd first"
 
 ------------------------------------------------------------------------
 
@@ -126,9 +129,9 @@ hireme <- function(err, d) {
 }
 
 # see ya!
-runr::runParallel(list(runr::bind(jsonlite::fromJSON, 
-                                  'https://api.github.com/users/chiefBiiko'), 
-                       runr::bind(strrep, '!', 10L),
+runr::runParallel(list(bounds::bind(jsonlite::fromJSON, 
+                                    'https://api.github.com/users/chiefBiiko'), 
+                       bounds::bind(strrep, '!', 10L),
                        function() gsub('[^3<]', '', '<kreuzberg36original>')), 
                   hireme)
 ```
