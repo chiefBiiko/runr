@@ -38,9 +38,9 @@ Values for the `tasks` or `cb` parameter can be defined anonymous or referenced 
 
 ```{r}
 # callback skeleton - must have exactly two parameters
-callback <- function(err, d) {
+callback <- function(err, data) {
   if (!is.null(err)) stop(err, err$task)
-  d
+  data
 }
 ```
 
