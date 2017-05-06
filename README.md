@@ -35,7 +35,7 @@ Values for the `tasks` or `cb` parameter can be defined anonymous or referenced 
 ``` r
 # callback skeleton - must have exactly two parameters
 callback <- function(err, data) {
-  if (!is.null(err)) stop(err, err$task)
+  if (!is.null(err)) stop(err, err$task)  # check n go
   data
 }
 ```
@@ -50,19 +50,18 @@ runSeries
 `runr::runSeries` runs its input tasks sequentially returning either a named list (on error `NULL`) or the value of a given callback.
 
 ``` r
-# some named functions
+# a named function
 moo <- function() 'moooo'
-zoo <- function() 1L:3L
 
 # run as series
-runr::runSeries(list(Sys.getpid, zoo, moo), callback)
+runr::runSeries(list(Sys.getpid, Sys.time, moo), callback)
 ```
 
     $Sys.getpid
-    [1] 6684
+    [1] 8944
 
-    $zoo
-    [1] 1 2 3
+    $Sys.time
+    [1] "2017-05-06 11:31:49 CEST"
 
     $moo
     [1] "moooo"
@@ -77,20 +76,23 @@ runWaterfall
 :ocean: All tasks except the first must have at least one parameter.
 
 ``` r
+# another named function
+zoo <- function() 1L:3L
+
+# bind and create a named closure
+reduceSum <- bounds::bind(Reduce, function(a, b) a + b)
+
 # chain/pipe consecutive returns
-runr::runWaterfall(list(zoo,
-                        base::factorial,
-                        bounds::bind(Reduce, function(a, b) a + b)),
-                   callback)
+runr::runWaterfall(list(zoo, factorial, reduceSum), callback)
 ```
 
-    $function1
+    $zoo
     [1] 1 2 3
 
-    $function2
+    $factorial
     [1] 1 2 6
 
-    $function3
+    $reduceSum
     [1] 9
 
 ------------------------------------------------------------------------
@@ -98,23 +100,25 @@ runr::runWaterfall(list(zoo,
 runRace
 -------
 
-`runr::runRace` runs its input tasks parallel until the very first return of any of its tasks and returns either a named list (all `NULL` but one and on error `NULL`) or the value of a given callback.
+`runr::runRace` runs its input tasks parallel, blocks until the very first return of any of its tasks and returns either a named list (all `NULL` but one; on error `NULL`) or the value of a given callback.
 
 ``` r
+# two resembling workers
+dlHuckPDF <- bounds::bind(utils::download.file, 
+                          'http://contentserver.adobe.com/store/books/HuckFinn.pdf',
+                          'huck_finn.pdf')
+dlHuckTXT <- bounds::bind(utils::download.file, 
+                          'http://www.textfiles.com/etext/AUTHORS/TWAIN/huck_finn',
+                          'huck_finn.txt')
+
 # run a race
-runr::runRace(list(bounds::bind(utils::download.file, 
-                                'http://www.textfiles.com/etext/AUTHORS/TWAIN/huck_finn',
-                                'huck_finn.txt'), 
-                   bounds::bind(utils::download.file, 
-                                'http://contentserver.adobe.com/store/books/HuckFinn.pdf',
-                                'huck_finn.pdf')), 
-              callback)
+runr::runRace(list(dlHuckPDF, dlHuckTXT), callback)
 ```
 
-    $function1
+    $dlHuckPDF
     NULL
 
-    $function2
+    $dlHuckTXT
     [1] 0
 
 ------------------------------------------------------------------------
@@ -122,27 +126,23 @@ runr::runRace(list(bounds::bind(utils::download.file,
 runParallel
 -----------
 
-`runr::runParallel` runs its input tasks parallel until all complete and returns either a named list (on error `NULL`) or the value of a given callback.
+`runr::runParallel` runs its input tasks parallel, blocks until all complete and returns either a named list (on error `NULL`) or the value of a given callback.
 
 ``` r
-# callback
-hireme <- function(err, data) {
-  if (!is.null(err)) stop(err, err$task)  # check n go
-  sprintf('dev: @%s | %s: %s | <%s',
-          data$function1$login,
-          hi <- grep('hi', names(data$function1), value=TRUE),
-          as.character(data$function1[[hi]]), 
-          data$function2)
+# some stoopid workers
+d <- bounds::bind(jsonlite::fromJSON, 'https://api.github.com/users/chiefBiiko')
+o <- bounds::bind(base::sub, 
+                  '^.*(3).*$', '\\1', paste0(installed.packages(), collapse=''))
+
+# a new callback
+cb <- function(err, data) {
+  if (!is.null(err)) stop(err, err$task)
+  sprintf('@%s | %s | <%s',
+          data$d$login, grep('hi', names(data$d), value=TRUE), data$o)
 }
 
 # see ya!
-runr::runParallel(list(bounds::bind(jsonlite::fromJSON, 
-                                    'https://api.github.com/users/chiefBiiko'), 
-                       bounds::bind(base::sub, 
-                                    '^.*(3).*$', 
-                                    '\\1', 
-                                    paste0(installed.packages(), collapse=''))), 
-                  hireme)
+runr::runParallel(list(d, o), cb)
 ```
 
-    [1] "dev: @chiefBiiko | hireable: TRUE | <3"
+    [1] "@chiefBiiko | hireable | <3"
