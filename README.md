@@ -1,6 +1,8 @@
 runr
 ================
 
+[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+
 `runr` packs a set of higher order functions for running lists of functions in various modes.
 
 :movie\_camera: *[runSeries](#runseries)*
@@ -58,10 +60,10 @@ runr::runSeries(list(Sys.getpid, Sys.time, moo), callback)
 ```
 
     $Sys.getpid
-    [1] 8944
+    [1] 8848
 
     $Sys.time
-    [1] "2017-05-06 11:31:49 CEST"
+    [1] "2017-05-09 18:23:26 CEST"
 
     $moo
     [1] "moooo"
