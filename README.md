@@ -1,7 +1,7 @@
 runr
 ================
 
-[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/chiefBiiko/runr/issues)
 
 `runr` packs a set of higher order functions for running lists of functions in various modes.
 
@@ -60,10 +60,10 @@ runr::runSeries(list(Sys.getpid, Sys.time, moo), callback)
 ```
 
     $Sys.getpid
-    [1] 8848
+    [1] 8332
 
     $Sys.time
-    [1] "2017-05-09 18:23:26 CEST"
+    [1] "2017-05-09 19:15:05 CEST"
 
     $moo
     [1] "moooo"
