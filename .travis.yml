@@ -1,3 +1,8 @@
 language: r
 cache: packages
-r_packages: sys
+
+addons:
+  apt:
+    packages:
+      - iputils-ping
+      - libapparmor-dev
