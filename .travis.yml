@@ -6,5 +6,5 @@ sudo: false
 addons:
   apt:
     packages:
-      - iputils-ping
+#     - iputils-ping
       - libapparmor-dev
