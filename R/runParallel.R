@@ -56,7 +56,7 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
   if (!dir.exists('.runr')) {
     dir.create('.runr')  # root for all tasks
   } else {
-    unlink('.runr/*')    # clear old stuff
+    unlink(file.path('.runr', '*'))  # clear old stuff
   }
   # filenames
   FLNMS_R <- lapply(1L:length(games), function(i) {
@@ -67,7 +67,7 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
   FLNMS_BND <- lapply(FLNMS_RDS, function(n) sub('xp', 'bnd.xp', n, perl=TRUE))
   # clone parent's global environment data
   save(list=ls(all.names=TRUE, envir=.GlobalEnv), 
-       file=".runr/clone.RData", envir=.GlobalEnv)
+       file=file.path('.runr', 'clone.RData'), envir=.GlobalEnv)
   # further preparation
   PID <- list()  # memory for PIDs of tasks
   lapply(1L:length(tasks), function(i) {
@@ -80,7 +80,7 @@ runParallel <- function(tasks=list(NULL), cb=NULL) {
                               '%s\n',  # for bound data
                               'RTN <- NULL\n', 
                               'runr_END <- \'runr_EOF\'\n',
-                              'load(\'.runr/clone.RData\')\n', 
+                              'load(file.path(\'.runr\', \'clone.RData\'))\n', 
                               'list(\n', 
                               'tryCatch(\n',
                               'assign(\'RTN\', (FUN)(), envir=.GlobalEnv),\n',  
