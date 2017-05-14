@@ -1,8 +1,6 @@
 language: r
 cache: packages
 
-sudo: false
-
 addons:
   apt:
     packages:
