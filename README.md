@@ -1,7 +1,7 @@
 runr
 ================
 
-[![Build Status](https://travis-ci.org/chiefBiiko/runr.svg?branch=master)](https://travis-ci.org/chiefBiiko/runr) [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/chiefBiiko/runr/issues)
+[![Build Status](https://travis-ci.org/chiefBiiko/runr.svg?branch=master)](https://travis-ci.org/chiefBiiko/runr) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/chiefBiiko/runr?branch=master&svg=true)](https://ci.appveyor.com/project/chiefBiiko/runr) [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/chiefBiiko/runr/issues)
 
 `runr` packs a set of higher order functions for running lists of functions in various modes.
 
@@ -60,10 +60,10 @@ runr::runSeries(list(Sys.getpid, Sys.time, moo), callback)
 ```
 
     $Sys.getpid
-    [1] 7724
+    [1] 1808
 
     $Sys.time
-    [1] "2017-05-13 19:30:36 CEST"
+    [1] "2017-05-16 04:52:16 CEST"
 
     $moo
     [1] "moooo"
