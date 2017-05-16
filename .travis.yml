@@ -4,5 +4,4 @@ cache: packages
 addons:
   apt:
     packages:
-#     - iputils-ping
       - libapparmor-dev
