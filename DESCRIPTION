@@ -6,8 +6,11 @@ Description: Run a list of functions as series, waterfall, race or parallel.
 Imports:
     sys,
     tools,
-    bounds
-Remotes: github::chiefBiiko/bounds
+    bounds,
+    sharedata
+Remotes:
+    github::chiefBiiko/bounds,
+    github::renkun-ken/sharedata
 Depends:
     R (>= 3.3.2)
 License: MIT + file LICENSE

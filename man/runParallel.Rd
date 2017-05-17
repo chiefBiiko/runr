@@ -39,8 +39,8 @@ it has a property \code{$task} indicating the function that failed.
 callback <- function(err, d) {
   if (is.null(err)) d else stop(err, err$task)
 }
-runParallel(list(function(i=1L) while (i < 1e6L) i <- i + 1L, 
-                 function() {Sys.sleep(7L); return('parapara!')}), 
+runParallel(list(function(i=0L) while (i < 1e6L) i <- i + 1L, 
+                 function() {Sys.sleep(5L); return(419L)}), 
             callback)
 
 }
