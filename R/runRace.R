@@ -102,7 +102,7 @@ runRace <- function(tasks=list(NULL), cb=NULL) {
     cat(xp.task, file=FLNMS_R[[i]])
     # start child processes non-blocking and record their pids
     PID[[games[i]]] <<- sys::exec_background(cmd='Rscript', args=FLNMS_R[[i]], 
-                                             std_out=FALSE, std_err=FALSE)
+                                             std_out=TRUE, std_err=TRUE)
   })
   # enter blocking loop till all tasks are done
   err <- NULL
