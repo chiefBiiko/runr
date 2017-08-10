@@ -9,43 +9,42 @@ runRace(tasks = list(NULL), cb = NULL)
 \arguments{
 \item{tasks}{List of functions (anonymous and named) \strong{required}.}
 
-\item{cb}{Anonymous or named function with signature 
+\item{cb}{Anonymous or named function with signature
 \code{cb(error, data)} \strong{optional}.}
 }
 \value{
-If \code{cb} is \code{NULL} the tasks' return values are returned 
-in a named list (on error \code{NULL}). If \code{cb} is a function it is 
-called upon completion of all tasks and gets passed an error value 
-(default \code{NULL}) as first parameter and a named list of the tasks' 
+If \code{cb} is \code{NULL} the tasks' return values are returned
+in a named list (on error \code{NULL}). If \code{cb} is a function it is
+called upon completion of all tasks and gets passed an error value
+(default \code{NULL}) as first parameter and a named list of the tasks'
 return values (on error \code{NULL}) as second parameter.
 }
 \description{
-\code{runRace} runs its input tasks parallel until the very first return of 
+\code{runRace} runs its input tasks parallel until the very first return of
 any of its tasks and returns either a named list (all \code{NULL} but one and
 on error \code{NULL}) or the value of a given callback.
 }
 \details{
-If an error is encountered while calling the tasks without a 
-callback \code{runRace} immediately stops execution and returns 
-\code{NULL}. If an error is encountered and a callback is defined 
-\code{runRace} immediately stops execution and calls the callback with 
-the \code{data} parameter set to \code{NULL} and the \code{error} parameter 
-set to the encountered error. Thus, the callback will always have only one 
-non-\code{NULL} argument. Within the callback simply check for an error 
-with \code{is.null(error)}. If the \code{error} object is not \code{NULL} 
+If an error is encountered while calling the tasks without a
+callback \code{runRace} immediately stops execution and returns
+\code{NULL}. If an error is encountered and a callback is defined
+\code{runRace} immediately stops execution and calls the callback with
+the \code{data} parameter set to \code{NULL} and the \code{error} parameter
+set to the encountered error. Thus, the callback will always have only one
+non-\code{NULL} argument. Within the callback simply check for an error
+with \code{is.null(error)}. If the \code{error} object is not \code{NULL}
 it has a property \code{$task} indicating the function that failed.
 }
 \examples{
 callback <- function(err, d) {
   if (is.null(err)) d else stop(err, err$task)
 }
-runRace(list(function() {Sys.sleep(11L); return('first first')}, 
-             function() {Sys.sleep(10L); return('second first')}), 
+runRace(list(function() {Sys.sleep(11L); return('first first')},
+             function() {Sys.sleep(10L); return('second first')}),
         callback)
 
 }
 \seealso{
-\code{\link{runSeries}} \code{\link{runWaterfall}} 
+\code{\link{runSeries}} \code{\link{runWaterfall}}
 \code{\link{runParallel}}
 }
-

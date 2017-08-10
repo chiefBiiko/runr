@@ -51,4 +51,3 @@ runSeries(list(function() 1L,
 \code{\link{runParallel}}
 \url{https://github.com/feross/run-series}
 }
-
