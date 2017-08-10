@@ -60,10 +60,10 @@ runr::runSeries(list(Sys.getpid, Sys.time, moo), callback)
 ```
 
     $Sys.getpid
-    [1] 10036
+    [1] 8560
 
     $Sys.time
-    [1] "2017-08-10 18:15:51 CEST"
+    [1] "2017-08-10 18:19:12 CEST"
 
     $moo
     [1] "moooo"
@@ -148,6 +148,8 @@ runr::runParallel(list(d, o), cb)
 ```
 
     [1] "@chiefBiiko | hireable | <3"
+
+------------------------------------------------------------------------
 
 TODO
 ----
