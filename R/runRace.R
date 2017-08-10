@@ -125,7 +125,7 @@ runRace <- function(tasks=list(NULL), cb=NULL) {
     if (!status[[games[i]]] &&
         tryCatch(sharedata::clone_object(MMNMS_LOG[[i]]) == 'runr_EOF',
                  error=function(e) FALSE)) {
-      Sys.sleep(.1)  # wait 4 OS to commit
+      Sys.sleep(.5)  # wait 4 OS to commit
       # read in return value
       RTN <- sharedata::clone_object(MMNMS_OUT[[i]])
       # not assigning NULL to prevent deleting named list item

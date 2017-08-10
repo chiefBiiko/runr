@@ -125,3 +125,11 @@ cb <- function(err, data) {
 # see ya!
 runr::runParallel(list(d, o), cb)
 ```
+
+## TODO
+
+runRace, runParallel
+
++ split preparation and launch of child processes into two loops for less lag between child launches 
++ move from `Rscript FILE` to `R --vanilla --slave -e CODE` for speed up
++ decrease timeout when reading children's OUT back into main R parent

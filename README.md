@@ -60,10 +60,10 @@ runr::runSeries(list(Sys.getpid, Sys.time, moo), callback)
 ```
 
     $Sys.getpid
-    [1] 12160
+    [1] 10036
 
     $Sys.time
-    [1] "2017-08-09 07:33:00 CEST"
+    [1] "2017-08-10 18:15:51 CEST"
 
     $moo
     [1] "moooo"
@@ -118,10 +118,10 @@ runr::runRace(list(dlHuckPDF, dlHuckTXT), callback)
 ```
 
     $dlHuckPDF
-    NULL
+    [1] 0
 
     $dlHuckTXT
-    [1] 0
+    NULL
 
 ------------------------------------------------------------------------
 
@@ -148,3 +148,12 @@ runr::runParallel(list(d, o), cb)
 ```
 
     [1] "@chiefBiiko | hireable | <3"
+
+TODO
+----
+
+runRace, runParallel
+
+-   split preparation and launch of child processes into two loops for less lag between child launches
+-   move from `Rscript FILE` to `R --vanilla --slave -e CODE` for speed up
+-   decrease timeout when reading children's OUT back into main R parent
