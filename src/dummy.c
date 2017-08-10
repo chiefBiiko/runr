@@ -1,1 +1,0 @@
-// trick krlmlr' s appveyor script to install rtools by including a src dir
