@@ -22,10 +22,11 @@ testthat::test_that('callback has either error or data', {
                              list(moo='moooo',
                                   hoo=list(17L:36L)))
 
-  # without error error is NULL
-  testthat::expect_null(runRace(list(moo, 
+  # callback just passes on
+  testthat::expect_type(runRace(list(moo,
                                      hoo),
-                                function(err, d) list(err, d))[[1L]])
+                                function(err, d) list(err, d)),
+                        'list')
 
   # without any error callback's return is named
   testthat::expect_named(runSeries(list(moo,
@@ -39,17 +40,19 @@ testthat::test_that('callback has either error or data', {
                                  function(d) d))
 
   # 2nd class error object always has a $task property
-  testthat::expect_type(runParallel(list(moo,  # (2nd class error)
-                                         function() stop('color')),
-                                    function(err, d) list(err, d))[[1L]]$task,
-                        'character')
+  testthat::expect_identical(runParallel(list(moo,  # (2nd class error)
+                                              function() stop('horror')),
+                                         function(err, d) {
+                                           list(err, d)
+                                         })[[1L]]$task,
+                             'task2')
 
   # with 1st class error callback throws
   testthat::expect_error(runSeries(list(moo),
                                   callback))
 
   # with 2nd class error callback throws
-  testthat::expect_error(runSeries(list(moo, 
+  testthat::expect_error(runSeries(list(moo,
                                         hoo,
                                         function() stop('horror')),
                                    callback))

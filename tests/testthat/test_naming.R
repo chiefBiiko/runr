@@ -12,12 +12,12 @@ testthat::test_that('naming convention is robust', {
   # anonymous inputs only
   testthat::expect_named(runSeries(list(function() 0L, 
                                         function() NULL)),
-                         c('function1', 'function2'))
+                         c('task1', 'task2'))
 
   # mixed inputs
   testthat::expect_named(runWaterfall(list(moo, 
                                            function(a) paste0(a, 'la'))),
-                         c('function1', 'function2'))
+                         c('task1', 'task2'))
 
   # named inputs only
   testthat::expect_named(runParallel(list(moo, 
@@ -25,15 +25,11 @@ testthat::test_that('naming convention is robust', {
                          c('moo', 'doo'))
 
   # messed up anonymous inputs
-  testthat::expect_named(runParallel(list(function(a, b) 
-                                            list(a=1L, b=77L),
+  testthat::expect_named(runParallel(list(function() list(a=1L, b=77L),
                                           function() list(a=0.5564, 
                                                           b=0.3443,
                                                           z=FALSE),
-                                          function(x, y) {  # nonsense
-                                            Sys.sleep(7L)
-                                            return(0L)
-                                          })),
-                         c('function1', 'function2', 'function3'))
+                                          function(x, y) Sys.sleep(7L))),
+                         c('task1', 'task2', 'task3'))
 })
 

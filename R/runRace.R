@@ -60,50 +60,63 @@ runRace <- function(tasks=list(NULL), cb=NULL) {
   }
   # filenames
   FLNMS_R <- file.path('.runr', paste0('xp.', games, '.R'))
-  MMNMS_LOG <- lapply(1L:length(FLNMS_R), function(i) paste0('LOG', as.character(i)))
-  MMNMS_OUT <- lapply(1L:length(FLNMS_R), function(i) paste0('OUT', as.character(i)))
-  MMNMS_BND <- lapply(1L:length(FLNMS_R), function(i) paste0('BND', as.character(i)))
+  MMNMS_LOG <- lapply(1L:length(FLNMS_R), function(i) paste0('LOG',
+                                                             as.character(i)))
+  MMNMS_OUT <- lapply(1L:length(FLNMS_R), function(i) paste0('OUT',
+                                                             as.character(i)))
+  MMNMS_BND <- lapply(1L:length(FLNMS_R), function(i) paste0('BND',
+                                                             as.character(i)))
+  # execution script template for children
+  TMPL <- paste0('%s\n',  # for function object
+                 '%s\n',  # for bound data
+                 'RTN <- NULL\n',
+                 'runr_END <- \'runr_EOF\'\n',
+                 'sharedata::clone_environment(\'CLONE\', envir=.GlobalEnv)\n',
+                 'list(\n',
+                 'tryCatch(\n',
+                 'assign(\'RTN\', (FUN)(), envir=.GlobalEnv),\n',
+                 'error=function(e) {\n',
+                 'assign(\'runr_END\',',
+                 'geterrmessage(), envir=.GlobalEnv)\n',
+                 'assign(\'RTN\', e, envir=.GlobalEnv)',
+                 '}\n',
+                 '),\n',
+                 'sharedata::share_object(RTN, \'%s\')\n',
+                 ')\n',
+                 'sharedata::share_object(runr_END, \'%s\')')
   # clone parent's global environment data... sharedata::...
   sharedata::share_environment('CLONE', envir=.GlobalEnv)
   # further preparation
   PID <- list()  # memory for PIDs of tasks
-  lapply(1L:length(tasks), function(i) {
+  xp.tasks <- vector('list', length(tasks))
+  for (i in seq_along(tasks)) {
     # conditionally transfer bound environments
     if (bounds::isBound(tasks[[i]])) {  # save bound environments
       sharedata::share_object(environment(tasks[[i]]), MMNMS_BND[[i]])
     }
     # prepare input tasks
-    xp.task <- sprintf(paste0('%s\n',  # for function object
-                              '%s\n',  # for bound data
-                              'RTN <- NULL\n',
-                              'runr_END <- \'runr_EOF\'\n',
-                              'sharedata::clone_environment(\'CLONE\', envir=.GlobalEnv)\n',
-                              'list(\n',
-                              'tryCatch(\n',
-                              'assign(\'RTN\', (FUN)(), envir=.GlobalEnv),\n',
-                              'error=function(e) {\n',
-                              'assign(\'runr_END\', ',
-                              'geterrmessage(), envir=.GlobalEnv)\n',
-                              'assign(\'RTN\', e, envir=.GlobalEnv)\n',
-                              '}\n',
-                              '),\n',
-                              'sharedata::share_object(runr_END, \'%s\')',
-                              ')\n',
-                              'sharedata::share_object(RTN, \'%s\')'),
-                       paste0('FUN <- ',
-                              paste0(deparse(tasks[[i]]), sep='\n', collapse='')),
-                       if (bounds::isBound(tasks[[i]])) {
-                         paste0('BOUND <- sharedata::clone_object(\'', MMNMS_BND[[i]], '\')\n',
-                                'environment(FUN) <- BOUND')
-                       } else { '' },
-                       MMNMS_LOG[[i]],
-                       MMNMS_OUT[[i]])
+    xp.tasks[[i]] <- sprintf(TMPL,
+                             paste0('FUN <- ',
+                                    paste0(deparse(tasks[[i]]),
+                                           sep='\n', collapse='')),
+                             if (bounds::isBound(tasks[[i]])) {
+                               paste0('BOUND <- sharedata::clone_object(\'',
+                                      MMNMS_BND[[i]],
+                                      '\')\n',
+                                      'environment(FUN) <- BOUND')
+                             } else { '' },
+                             MMNMS_OUT[[i]],
+                             MMNMS_LOG[[i]])
     # export prepared tasks
-    cat(xp.task, file=FLNMS_R[[i]])
-    # start child processes non-blocking and record their pids
-    PID[[games[i]]] <<- sys::exec_background(cmd='Rscript', args=FLNMS_R[[i]],
-                                             std_out=FALSE, std_err=FALSE)
-  })
+    cat(xp.tasks[[i]], file=FLNMS_R[[i]])
+  }
+  # start child processes non-blocking and record their pids
+  for (i in seq_along(tasks)) {
+    PID[[games[i]]] <- sys::exec_background(cmd='R',
+                                            args=c('--vanilla', '--slave',
+                                                   '-f', FLNMS_R[[i]]),
+                                            std_out=FALSE, std_err=FALSE)
+  }
   # enter blocking loop till all tasks are done
   err <- NULL
   status <- lapply(PID, function(p) FALSE)  # task status completed: T/F
@@ -115,9 +128,18 @@ runRace <- function(tasks=list(NULL), cb=NULL) {
         tryCatch(sharedata::clone_object(MMNMS_LOG[[i]]) != 'runr_EOF',
                  error=function(e) FALSE)) {
       x <- NULL  # set data to NULL
-      Sys.sleep(.5)  # wait 4 OS to commit
+     Sys.sleep(.5)  # wait 4 OS to commit
       # read in error
-      err <- sharedata::clone_object(MMNMS_OUT[[i]])
+     err <- sharedata::clone_object(MMNMS_OUT[[i]])
+      # poll <- 30
+      # while (poll > 0) {
+      #   if (tryCatch(err <- sharedata::clone_object(MMNMS_OUT[[i]]),
+      #                error=function(e) FALSE) != FALSE) {
+      #     break
+      #   }
+      #   Sys.sleep(.1)
+      #   poll <- poll - 1L
+      # }
       err$task <- games[i]  # add info
       break  # early exit
     }
@@ -128,6 +150,15 @@ runRace <- function(tasks=list(NULL), cb=NULL) {
       Sys.sleep(.5)  # wait 4 OS to commit
       # read in return value
       RTN <- sharedata::clone_object(MMNMS_OUT[[i]])
+      # poll <- 30
+      # while (poll > 0) {
+      #   if (tryCatch(RTN <- sharedata::clone_object(MMNMS_OUT[[i]]),
+      #                error=function(e) FALSE) != FALSE) {
+      #     break
+      #   }
+      #   Sys.sleep(.1)
+      #   poll <- poll - 1L
+      # }
       # not assigning NULL to prevent deleting named list item
       if (!is.null(RTN)) x[[games[i]]] <- RTN
       status[[games[i]]] <- TRUE  # mark current task as completed
