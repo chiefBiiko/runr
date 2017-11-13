@@ -1,9 +1,13 @@
 runr
 ================
 
-[![Build Status](https://travis-ci.org/chiefBiiko/runr.svg?branch=master)](https://travis-ci.org/chiefBiiko/runr) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/chiefBiiko/runr?branch=master&svg=true)](https://ci.appveyor.com/project/chiefBiiko/runr) [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
+[![Build Status](https://travis-ci.org/chiefbiiko/runr.svg?branch=master)](https://travis-ci.org/chiefbiiko/runr) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/chiefbiiko/runr?branch=master&svg=true)](https://ci.appveyor.com/project/chiefbiiko/runr) [![Project Status: WIP â Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
+
+------------------------------------------------------------------------
 
 `runr` packs a set of higher order functions for running lists of functions in various modes.
+
+------------------------------------------------------------------------
 
 :movie\_camera: *[runSeries](#runseries)*
 
@@ -19,7 +23,7 @@ Get it
 ------
 
 ``` r
-devtools::install_github('chiefBiiko/runr')
+devtools::install_github('chiefbiiko/runr')
 ```
 
 ------------------------------------------------------------------------
@@ -42,7 +46,7 @@ callback <- function(err, data) {
 }
 ```
 
-[`bounds`](https://github.com/chiefBiiko/bounds), a dependency of `runr`, has an export `bounds::bind` that allows binding parameters to functions. It takes a function and a variable sequence of parameters as inputs and returns a closure with the given parameters bound to it. Might come in handy at times.
+[`bounds`](https://github.com/chiefbiiko/bounds), a dependency of `runr`, has an export `bounds::bind` that allows binding parameters to functions. It takes a function and a variable sequence of parameters as inputs and returns a closure with the given parameters bound to it. Might come in handy at times.
 
 ------------------------------------------------------------------------
 
@@ -60,10 +64,10 @@ runr::runSeries(list(Sys.getpid, Sys.time, moo), callback)
 ```
 
     $Sys.getpid
-    [1] 8560
+    [1] 158584
 
     $Sys.time
-    [1] "2017-08-10 18:19:12 CEST"
+    [1] "2017-11-13 17:59:36 CET"
 
     $moo
     [1] "moooo"
@@ -118,10 +122,10 @@ runr::runRace(list(dlHuckPDF, dlHuckTXT), callback)
 ```
 
     $dlHuckPDF
-    [1] 0
+    NULL
 
     $dlHuckTXT
-    NULL
+    [1] 0
 
 ------------------------------------------------------------------------
 
@@ -132,7 +136,7 @@ runParallel
 
 ``` r
 # some stoopid workers
-d <- bounds::bind(jsonlite::fromJSON, 'https://api.github.com/users/chiefBiiko')
+d <- bounds::bind(jsonlite::fromJSON, 'https://api.github.com/users/chiefbiiko')
 o <- bounds::bind(base::sub, 
                   '^.*(3).*$', '\\1', paste0(installed.packages(), collapse=''))
 
@@ -147,7 +151,7 @@ cb <- function(err, data) {
 runr::runParallel(list(d, o), cb)
 ```
 
-    [1] "@chiefBiiko | hireable | <3"
+    [1] "@chiefbiiko | hireable | <3"
 
 ------------------------------------------------------------------------
 
@@ -156,6 +160,11 @@ TODO
 
 runRace, runParallel
 
--   split preparation and launch of child processes into two loops for less lag between child launches
--   move from `Rscript FILE` to `R --vanilla --slave -e CODE` for speed up
 -   decrease timeout when reading children's OUT back into main R parent
+
+------------------------------------------------------------------------
+
+License
+-------
+
+[MIT](./LICENSE)
