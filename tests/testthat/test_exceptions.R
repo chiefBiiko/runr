@@ -16,5 +16,6 @@ testthat::test_that('with exceptions no data return', {
   # without callback and 1st class error run* throw
   testthat::expect_error(runWaterfall(list(function() 1L,
                                            function() a + b + 1L)))
-  testthat::expect_error(runParallel(list(doo)))
+  # cb must have 2 parameters
+  testthat::expect_error(runParallel(list(doo), function(err) {}))
 })

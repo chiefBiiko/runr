@@ -36,12 +36,14 @@ with \code{is.null(error)}. If the \code{error} object is not \code{NULL}
 it has a property \code{$task} indicating the function that failed.
 }
 \examples{
+\dontrun{
 callback <- function(err, d) {
   if (is.null(err)) d else stop(err, err$task)
 }
 runRace(list(function() {Sys.sleep(11L); return('first first')},
              function() {Sys.sleep(10L); return('second first')}),
         callback)
+}
 
 }
 \seealso{

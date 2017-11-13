@@ -1,4 +1,25 @@
 #' @keywords internal
+isNonEmptyListOfInts <- function(x) {
+  return(
+    is.list(x) && length(x) != 0L && 
+    all(sapply(x, function(y) is.numeric(y) && y %% 1 == 0))
+  )
+}
+
+#' @keywords internal
+isNonEmptyListofFuncs <- function(x) {
+  return(
+    is.list(x) && length(x) != 0L && all(sapply(x, function(y) is.function(y)))
+  )
+}
+
+#' @keywords internal
+nameI <- function(name, seq) {
+  stopifnot(is.character(name), length(name) == 1L, is.numeric(seq))
+  return(lapply(as.list(seq), function(i) paste0(name, as.character(i))))
+}
+
+#' @keywords internal
 getFuncNames <- function(tasks, cb) {  # returns the names of tasks only
   mcall <- gsub('\\s+', ' ',  # get unevaluated inputs
                 paste0(deparse(match.call(definition=sys.function(sys.parent(n=1L)),
@@ -23,4 +44,11 @@ getFuncNames <- function(tasks, cb) {  # returns the names of tasks only
   }
   # returning name vector
   return(games)
+}
+
+#' @keywords internal
+killEmAll <- function(PIDS) {
+  stopifnot(isNonEmptyListOfInts(PIDS))
+  killed <- sapply(PIDS, tools::pskill)
+  while (!all(killed)) killed <- sapply(PIDS, tools::pskill)
 }
